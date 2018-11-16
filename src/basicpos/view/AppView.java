@@ -50,6 +50,10 @@ public class AppView {
 		return input;
 	}
 	
+	public void inputEnter() {
+		scanner.nextLine();
+	}
+	
 	public void clearInputBuffer() {
 		scanner.nextLine();
 	}

@@ -39,14 +39,16 @@ public class PurchaseController {
 			
 			appView.printNotice("물건의 개수를 입력해 주세요. (종료는 0 입력)");
 			
-			String count = appView.inputString();
+			int count = appView.inputInt();
 			
-			if(count.equals("0")) break;
-			if(!count.equals("")) {
-				product.setProductCount(Integer.parseInt(count));
+			if(count == 0) {
+				product = null;
+				appView.printNotice("물건을 추가하지 않았습니다.");
+				break;
 			}
+			product.setProductCount(count);
 
-			cart.addProduct(product);
+			if(product != null) cart.addProduct(product);
 			
 			if(product.getIsAdultOnly()) isAdultOnly = true;
 			
@@ -86,6 +88,9 @@ public class PurchaseController {
 			receivedCash = appView.inputInt();
 			appView.printNotice(String.format("받으신 금액은 %,d원이며, 거스름돈은 %,d원입니다.\n", 
 								receivedCash, (receivedCash - cart.getAllPrice())));
+			appView.printNotice("금액을 정산하신 후 엔터를 눌러주세요. 영수증이 출력됩니다.");
+			appView.inputEnter();
+			
 		}
 		
 		System.out.println("\n\n");
