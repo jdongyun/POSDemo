@@ -54,6 +54,18 @@ public class Cart {
 		Collection<Product> collection = cartMap.values();
 		return collection;
 	}
+	
+	public boolean hasAdultProduct() {
+		Collection<Product> collection = cartMap.values();
+		Iterator<Product> ite = collection.iterator();
+		while(ite.hasNext()) {
+			Product tempProduct = ite.next();
+			if(tempProduct.getIsAdultOnly()) {
+				return true;
+			}
+		}
+		return false;
+	}
 	/*
 	 * 삭제는 나중에 구현합니다.
 	public boolean removeProduct(int prodCode, int prodCount) {

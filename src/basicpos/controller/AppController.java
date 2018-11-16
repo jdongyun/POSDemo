@@ -27,7 +27,6 @@ public class AppController {
 
 		while(true) {
 			mainView.printList();
-			
 			int input = appView.inputInt();
 			
 			switch(input) {
