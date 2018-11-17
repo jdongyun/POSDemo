@@ -1,12 +1,24 @@
 package basicpos.view;
 import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
 
 public class ReceiptView {
 	private final static char WALL = '-';
 	public static enum PurchaseType {
 		PURCHASE_CARD,
 		PURCHASE_CASH
+	}
+	private Print PrintType;
+	public static enum Print {
+		PRINT_RECEIPT,
+		PRINT_INFO
+	}
+	
+	public ReceiptView() {
+		this.PrintType = Print.PRINT_RECEIPT;
+	}
+	
+	public ReceiptView(Print printType) {
+		this.PrintType = printType;
 	}
 	
 	private int getLength(String str) {
@@ -23,11 +35,20 @@ public class ReceiptView {
 	}
 
 	public void printReceiptHead() {
-		System.out.println("번호  물품명              수량      단가      총액");
+		if(this.PrintType == Print.PRINT_RECEIPT) {
+			System.out.println("번호  물품명              수량      단가      총액");
+		} else {
+			System.out.println("물품번호  물품명                   단가");
+		}
+		
 	}
 	
 	public void printReceiptLine() {
-		for(int i = 0; i < 50; i++) {
+		int printCount = 50; //Default print count
+		if(this.PrintType == Print.PRINT_INFO) {
+			printCount = 39;
+		}
+		for(int i = 0; i < printCount; i++) {
 			System.out.print(WALL);
 		}
 		System.out.println();
@@ -41,7 +62,21 @@ public class ReceiptView {
 		System.out.print(prodName);
 		for(int i = 0; i < (20 - getLength(prodName)); i++)
 			System.out.print(" ");
+			
 		System.out.printf("  %2d %,9d %,9d\n", prodCount, prodPrice, (prodPrice * prodCount));
+		
+	}
+	
+	public void printReceiptProduct(int index, String prodName, int prodPrice) {
+
+		System.out.printf("  %6d  ", index);
+		
+		System.out.print(prodName);
+		for(int i = 0; i < (20 - getLength(prodName)); i++)
+			System.out.print(" ");
+		
+		System.out.printf("%,9d\n", prodPrice);
+		
 	}
 	
 	public void printReceiptPrice(int sumPrice) {

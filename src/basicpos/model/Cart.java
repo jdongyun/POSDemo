@@ -6,12 +6,10 @@ import java.util.Iterator;
 
 public class Cart {
 	private Map<Integer, Product> cartMap; //key는 물건의 번호, value는 물건 객체
-	private int productCount;
 	private int cartPrice;
 	
 	public Cart() {
 		this.cartMap = new HashMap<Integer, Product>();
-		this.productCount = 0;
 		this.cartPrice = 0;
 	}
 	/*
@@ -29,7 +27,6 @@ public class Cart {
 			return false;
 		} else {
 			cartMap.put(tProdCode, product);
-			this.productCount++;
 			refreshPrice();
 			return true;
 		}

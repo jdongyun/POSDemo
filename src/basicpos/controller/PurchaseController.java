@@ -137,7 +137,6 @@ public class PurchaseController {
 			Product tempProduct = ite.next();
 			receiptView.printReceiptProduct(index, tempProduct.getProductName(), 
 					tempProduct.getProductCount(), tempProduct.getProductPrice());
-			index++;
 		}
 		receiptView.printReceiptLine();
 		receiptView.printReceiptPrice(this.cart.getAllPrice());

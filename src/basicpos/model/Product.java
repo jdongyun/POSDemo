@@ -23,6 +23,10 @@ public class Product {
 		this.isAdultOnly = isAdult;
 	}
 	
+	public Product() {
+		this(0, "", 1, 0, false);
+	}
+
 	public void setProductNumber(int prodCode) {
 		this.productCode = prodCode;
 	}

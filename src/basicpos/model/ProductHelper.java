@@ -1,7 +1,8 @@
 package basicpos.model;
-import java.io.UnsupportedEncodingException;
 import java.sql.*;
-import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ProductHelper {
 	private final static String dbName = "ProductDB.db";
@@ -53,44 +54,33 @@ public class ProductHelper {
 			return null;
 		}
 	}
-/*
-	public void selectAll() {
+
+	public Iterator<Product> getProductDB() {
 		String query = "SELECT * FROM Product";
+		List<Product> list = new LinkedList<Product>();
 
 		try {
 			Connection conn = this.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
-
-			Collection<Product> products = new Collection<Product>();
+			
 			// loop through the result set
 			while (rs.next()) {
-				System.out.printf("%5d  ", rs.getInt("ProductCode"));
-				
-				System.out.print(rs.getString("ProductName"));
-				for(int i = 0; i < (20 - getLength(rs.getString("ProductName"))); i++)
-					System.out.print(" ");
-				System.out.printf("  %9d %d\n", rs.getInt("ProductPrice"), rs.getInt("IsAdultOnly"));
+				Product tempProduct = new Product();
+				tempProduct.setProductNumber(rs.getInt("ProductCode"));
+				tempProduct.setProductName(rs.getString("ProductName"));
+				tempProduct.setProductPrice(rs.getInt("ProductPrice"));
+				tempProduct.setIsAdultOnly(rs.getInt("IsAdultOnly") == 1);
+						
+						
+				list.add(tempProduct);
 			}
+			return list.iterator();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			return null;
 		}
 	}
-	*/
-	
-	private int getLength(String str) {
-		//고정폭 글꼴과 EUC-KR 문자 인코딩을 이용,
-		//한글이 EUC-KR 인코딩에서 2바이트인 점을 이용해,
-		//고정폭 글꼴에서 차지하는 총 문자의 너비를 계산.
-		try {
-			byte[] bytes = str.getBytes("ms949");
-			return bytes.length;
-		} catch (UnsupportedEncodingException e){
-			System.out.println(e.getMessage());
-			return -1;
-		}
-	}
-	
 	
 	public static void createNewDatabase() {
 		String url = "jdbc:sqlite:" + dbName;
