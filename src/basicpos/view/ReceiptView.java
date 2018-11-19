@@ -104,4 +104,13 @@ public class ReceiptView {
 		System.out.printf("받은금액 %,41d\n", receivedCash);
 		System.out.printf("거스름돈 %,41d\n", (receivedCash - sumPrice));
 	}
+	
+	public void printCashRecieptForBuisness(String CashReciept)	{
+		System.out.println("사업자 증빙용 현금 영수증");
+		System.out.println("번호 : "+CashReciept);
+	}
+	public void printCashRecieptForNormal(String CashReciept)	{
+		System.out.println("개인용 현금 영수증");
+		System.out.println("번호 : "+CashReciept);
+	}
 }
