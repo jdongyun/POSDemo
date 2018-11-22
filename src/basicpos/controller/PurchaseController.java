@@ -74,7 +74,7 @@ public class PurchaseController {
 		appView.printNotice("결제 방식을 선택해 주세요.");
 		appView.printMessage("(1) 신용카드     (2) 현금     (0) 종료");
 		int purchaseType = 0;
-		String number = null;
+		
 		while (true) {
 			purchaseType = appView.inputInt();
 			if (purchaseType == 1 || purchaseType == 2) {
@@ -87,49 +87,59 @@ public class PurchaseController {
 		}
 
 		int receivedCash = this.cart.getAllPrice(); // 카드결제일 때의 기본값은 결제금액.
+		String taxNumber = null;
 
 		if (purchaseType == 2) {
 			appView.printNotice("현금 결제입니다.");
 			appView.printNotice(String.format("판매액은 %,d원입니다. 받으신 금액을 입력해 주세요.\n", cart.getAllPrice()));
 			receivedCash = appView.inputInt();
+			
 			appView.printNotice(String.format("받으신 금액은 %,d원이며, 거스름돈은 %,d원입니다.\n", receivedCash,
 					(receivedCash - cart.getAllPrice())));
+			
 			appView.printNotice("금액을 정산하신 후 엔터 버튼을 눌러주세요.");
 			appView.inputEnter();
+			
 			appView.printNotice("현금영수증 여부를 선택해 주세요.");
-			appView.printMessage("(1) 사업자 증빙용   (2) 개인용     (0) 하지 않음");
+			appView.printMessage("(1) 사업자 증빙용   (2) 개인용     (0) 건너뛰기");
 			int receiptType = 0;
-			while (true) {
+			boolean isComplete = false;
+			while (!isComplete) {
 				receiptType = appView.inputInt();
-				if (receiptType == 1) {
-					// 사업자 번호 입력 받음(10자리)
-					System.out.println("사업자 번호를 입력하세요.");
-					number = appView.inputString();
-					while (number.length() != 10) {
+				
+				switch(receiptType) {
+				case 1:
+					appView.printNotice("사업자 번호를 입력하세요.");
+					taxNumber = appView.inputString();
+					while (taxNumber.length() != 10) {
 						appView.printError("올바른 번호가 아닙니다.");
-						number = appView.inputString();
+						taxNumber = appView.inputString();
 					}
+					isComplete = true;
 					break;
-				} else if (receiptType == 2) {
-					// 개인 핸드폰번호 입력 받음(11자리)
-					System.out.println("핸드폰 번호를 입력하세요.");
-					number = appView.inputString();
-					while (number.length() != 11) {
+				case 2:
+					// 개인 휴대전화 번호 입력 받음(11자리)
+					appView.printNotice("휴대전화 번호를 입력하세요.");
+					taxNumber = appView.inputString();
+					while (taxNumber.length() != 11) {
 						appView.printError("올바른 번호가 아닙니다.");
-						number = appView.inputString();
+						taxNumber = appView.inputString();
 					}
+					isComplete = true;
 					break;
-				}
-				if (receiptType == 0) {
+				case 0:
+					isComplete = true;
 					break;
+				default:
+					//Nothing. goto while loop
 				}
+				
 			}
-			appView.printNotice("영수증이 출력됩니다.");
 		}
 
 		System.out.println("\n\n");
 
-		this.printReceipt(purchaseType, receivedCash, number);
+		this.printReceipt(purchaseType, receivedCash, taxNumber);
 
 		System.out.println("\n\n");
 	}
@@ -154,7 +164,7 @@ public class PurchaseController {
 		receiptView.printReceiptLine();
 	}
 
-	private void printReceipt(int purchaseType, int receivedCash, String CashReciept) {
+	private void printReceipt(int purchaseType, int receivedCash, String taxNumber) {
 		Collection<Product> products = this.cart.getAllProduct();
 		Iterator<Product> ite = products.iterator();
 		int index = 1;
@@ -163,11 +173,16 @@ public class PurchaseController {
 		receiptView.printReceiptLine();
 		receiptView.printReceiptHead();
 		receiptView.printReceiptLine();
+		
+		//계산 목록 시작
 		while (ite.hasNext()) {
 			Product tempProduct = ite.next();
 			receiptView.printReceiptProduct(index, tempProduct.getProductName(), tempProduct.getProductCount(),
 					tempProduct.getProductPrice());
 		}
+		//계산 목록 끝
+		
+		//판매액 및 결제방식 시작
 		receiptView.printReceiptLine();
 		receiptView.printReceiptPrice(this.cart.getAllPrice());
 		if (purchaseType == 1) {
@@ -175,19 +190,23 @@ public class PurchaseController {
 		} else if (purchaseType == 2) {
 			receiptView.printPurchageType(ReceiptView.PurchaseType.PURCHASE_CASH);
 		}
-
+		//판매액 및 결제방식 끝
+		
+		//받은금액 시작
 		receiptView.printReceiptLine();
 		receiptView.printCashData(receivedCash, this.cart.getAllPrice());
 		receiptView.printReceiptLine();
-		if (CashReciept.length() == 10) {// 사업자 증빙용
+		//받은금액 끝
+		
+		//현금영수증 시작
+		if (taxNumber.length() == 10) { // 사업자 증빙용
+			receiptView.printTaxNumberForBuisness(taxNumber);
 			receiptView.printReceiptLine();
-			receiptView.printCashRecieptForBuisness(CashReciept);
-			receiptView.printReceiptLine();
-		} else if (CashReciept.length() == 11) {// 개인
-			receiptView.printReceiptLine();
-			receiptView.printCashRecieptForNormal(CashReciept);
+		} else if (taxNumber.length() == 11) { // 개인용
+			receiptView.printTaxNumberForNormal(taxNumber);
 			receiptView.printReceiptLine();
 		}
+		//현금영수증 끝
 
 		System.out.println();
 

@@ -105,12 +105,10 @@ public class ReceiptView {
 		System.out.printf("거스름돈 %,41d\n", (receivedCash - sumPrice));
 	}
 	
-	public void printCashRecieptForBuisness(String CashReciept)	{
-		System.out.println("사업자 증빙용 현금 영수증");
-		System.out.println("번호 : "+CashReciept);
+	public void printTaxNumberForBuisness(String taxNumber)	{
+		System.out.printf("현금영수증(사업자 증빙용) 번호 %19s\n", taxNumber);
 	}
-	public void printCashRecieptForNormal(String CashReciept)	{
-		System.out.println("개인용 현금 영수증");
-		System.out.println("번호 : "+CashReciept);
+	public void printTaxNumberForNormal(String taxNumber)	{
+		System.out.printf("현금영수증(개인용) 번호 %26s\n", taxNumber);
 	}
 }
