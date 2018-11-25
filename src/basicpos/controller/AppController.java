@@ -2,6 +2,7 @@ package basicpos.controller;
 
 import java.util.Iterator;
 
+import basicpos.impl.PayController;
 import basicpos.model.Product;
 import basicpos.model.ProductHelper;
 import basicpos.view.AppView;
@@ -20,8 +21,8 @@ public class AppController {
 	public void run() {
 		
 		mainView.addView("1. 물품 계산");
-		mainView.addView("2. 물품 목록 확인");
-		mainView.addView("3. 관리 페이지");
+		mainView.addView("2. 물품 환불");
+		mainView.addView("3. 물품 목록 확인");
 		mainView.addView("0. 종료");
 
 		while(true) {
@@ -30,10 +31,14 @@ public class AppController {
 			
 			switch(input) {
 			case 1: //물품 계산
-				PurchaseController pc = new PurchaseController();
-				pc.purchase();
+				PayController pc = new PurchaseController();
+				pc.run();
 				break;
-			case 2: //물품 목록 확인 
+			case 2: //물품 환불
+				PayController rc = new RefundController();
+				rc.run();
+				break;
+			case 3: //물품 목록 확인 
 				ReceiptView receiptView = new ReceiptView(ReceiptView.Print.PRINT_INFO);
 				ProductHelper pHelper = new ProductHelper();
 				Iterator<Product> ite = pHelper.getProductDB();

@@ -3,65 +3,18 @@ package basicpos.controller;
 import java.util.Collection;
 import java.util.Iterator;
 
+import basicpos.impl.PayController;
 import basicpos.model.Cart;
 import basicpos.model.Product;
 import basicpos.model.ProductHelper;
 import basicpos.view.AppView;
 import basicpos.view.ReceiptView;
 
-public class PurchaseController {
-	private AppView appView;
-	private ProductHelper prodData;
-	private Cart cart;
-
-	public PurchaseController() {
-		this.appView = new AppView();
-		this.prodData = new ProductHelper();
-		this.cart = new Cart();
-	}
-
-	public void purchase() {
-		appView.printNotice("물건 계산 기능입니다.\n\n");
-		while (true) {
-			Product product;
-
-			appView.printNotice("물건의 코드 번호를 입력해 주세요. (종료는 0 입력)");
-
-			int input = appView.inputInt();
-
-			if (input == 0)
-				break;
-
-			product = prodData.getProduct(input);
-
-			if (product == null) {
-				appView.printError("올바른 코드 번호가 아닙니다.");
-				continue;
-			}
-
-			appView.printNotice("물건의 개수를 입력해 주세요. (종료는 0 입력)");
-
-			int count = appView.inputInt();
-
-			if (count == 0) {
-				product = null;
-				appView.printNotice("물건을 추가하지 않았습니다.");
-				break;
-			}
-
-			product.setProductCount(count);
-
-			if (product != null)
-				this.cart.addProduct(product);
-
-			System.out.println("\n\n\n\n\n\n\n\n\n\n\n");
-			this.printAllProduct();
-			System.out.println();
-		}
-
-		// 바코드 다 찍음
-
-		System.out.println("\n\n\n\n");
+public class PurchaseController extends PayController {
+	
+	
+	@Override
+	protected void pay() {
 
 		this.printAllProduct();
 
@@ -71,7 +24,7 @@ public class PurchaseController {
 			appView.printNotice("나이를 확인해야 하는 물품이 있습니다.\n");
 		}
 
-		appView.printNotice("결제 방식을 선택해 주세요.");
+		appView.printNotice("결제 수단을 선택해 주세요.");
 		appView.printMessage("(1) 신용카드     (2) 현금     (0) 종료");
 		int purchaseType = 0;
 		
@@ -141,10 +94,9 @@ public class PurchaseController {
 
 		this.printReceipt(purchaseType, receivedCash, taxNumber);
 
-		System.out.println("\n\n");
 	}
 
-	private void printAllProduct() {
+	protected void printAllProduct() {
 		Collection<Product> products = this.cart.getAllProduct();
 		Iterator<Product> ite = products.iterator();
 		int index = 1;
@@ -199,16 +151,23 @@ public class PurchaseController {
 		//받은금액 끝
 		
 		//현금영수증 시작
-		if (taxNumber.length() == 10) { // 사업자 증빙용
-			receiptView.printTaxNumberForBuisness(taxNumber);
-			receiptView.printReceiptLine();
-		} else if (taxNumber.length() == 11) { // 개인용
-			receiptView.printTaxNumberForNormal(taxNumber);
-			receiptView.printReceiptLine();
+		if(taxNumber != null) {
+			if (taxNumber.length() == 10) { // 사업자 증빙용
+				receiptView.printTaxNumberForBuisness(taxNumber);
+				receiptView.printReceiptLine();
+			} else if (taxNumber.length() == 11) { // 개인용
+				receiptView.printTaxNumberForNormal(taxNumber);
+				receiptView.printReceiptLine();
+			}
 		}
 		//현금영수증 끝
 
 		System.out.println();
+	}
+	
 
+	@Override
+	protected void printHead() {
+		appView.printNotice("물품 계산 기능입니다.");
 	}
 }
