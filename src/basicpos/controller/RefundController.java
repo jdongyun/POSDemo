@@ -35,6 +35,7 @@ public class RefundController extends PayController {
 		
 		if(purchaseType == 1) { //카드 번호 입력
 			
+			appView.printNotice("신용카드 환불입니다.");
 			appView.printNotice("신용카드 번호를 입력해 주세요.");
 			String cardNumber = appView.inputString();
 			appView.printNotice("환불이 완료되었습니다.");

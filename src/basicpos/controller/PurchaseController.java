@@ -42,7 +42,15 @@ public class PurchaseController extends PayController {
 		int receivedCash = this.cart.getAllPrice(); // 카드결제일 때의 기본값은 결제금액.
 		String taxNumber = null;
 
-		if (purchaseType == 2) {
+		if(purchaseType == 1) {
+			
+			appView.printNotice("신용카드 결제입니다.");
+			appView.printNotice("신용카드 번호를 입력해 주세요.");
+			String cardNumber = appView.inputString();
+			appView.printNotice("결제가 완료되었습니다.");
+			
+		} else if (purchaseType == 2) {
+			
 			appView.printNotice("현금 결제입니다.");
 			appView.printNotice(String.format("판매액은 %,d원입니다. 받으신 금액을 입력해 주세요.\n", cart.getAllPrice()));
 			receivedCash = appView.inputInt();
