@@ -3,6 +3,7 @@ package basicpos.controller;
 import java.util.Iterator;
 
 import basicpos.impl.PayController;
+import basicpos.model.PointHelper;
 import basicpos.model.Product;
 import basicpos.model.ProductHelper;
 import basicpos.view.AppView;
@@ -22,7 +23,7 @@ public class AppController {
 		
 		mainView.addView("1. 물품 계산");
 		mainView.addView("2. 물품 환불");
-		mainView.addView("3. 물품 목록 확인");
+		mainView.addView("3. 관리자 페이지");
 		mainView.addView("0. 종료");
 
 		while(true) {
@@ -39,23 +40,8 @@ public class AppController {
 				rc.run();
 				break;
 			case 3: //물품 목록 확인 
-				ReceiptView receiptView = new ReceiptView(ReceiptView.Print.PRINT_INFO);
-				ProductHelper pHelper = new ProductHelper();
-				Iterator<Product> ite = pHelper.getProductDB();
-				
-				appView.printMessage("");
-				receiptView.printReceiptLine();
-				receiptView.printReceiptHead();
-				receiptView.printReceiptLine();
-				while(ite.hasNext()) {
-					Product tempProduct = ite.next();
-					
-					receiptView.printReceiptProduct(tempProduct.getProductCode(), 
-							tempProduct.getProductName(), 
-							tempProduct.getProductPrice());
-				}
-				receiptView.printReceiptLine();
-				appView.printMessage("");
+				ManageController mc = new ManageController();
+				mc.run();
 				break;
 			case 0:
 				appView.printNotice("프로그램을 종료합니다.");

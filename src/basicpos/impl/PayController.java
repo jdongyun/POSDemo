@@ -1,6 +1,7 @@
 package basicpos.impl;
 
 import basicpos.model.Cart;
+import basicpos.model.DBHelper;
 import basicpos.model.Product;
 import basicpos.model.ProductHelper;
 import basicpos.view.AppView;
@@ -25,6 +26,8 @@ public abstract class PayController {
 		
 		this.pay();
 		appView.printMessage("\n\n");
+		
+		
 	}
 
 	private void addCart() {

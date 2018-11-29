@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ProductHelper {
 	private final static String dbName = "ProductDB.db";
-
+/*
 	private Connection connect() {
 		// SQLite connection string
 		String url = "jdbc:sqlite:" + dbName;
@@ -17,14 +17,14 @@ public class ProductHelper {
 			System.out.println(e.getMessage());
 		}
 		return conn;
-	}
-
+	}*/
+	
 	public boolean insertProduct(int prodCode, String prodName, int prodPrice, boolean isAdultOnly) {
 		String query = "INSERT INTO `Product`(`ProductCode`, `ProductName`, `ProductPrice`, `IsAdultOnly`) "
 				+ "VALUES(?,?,?,?)";
 
 		try {
-			Connection conn = this.connect();
+			Connection conn = DBHelper.connect();
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setInt(1, prodCode);
 			pstmt.setString(2, prodName);
@@ -32,9 +32,11 @@ public class ProductHelper {
 			int val = isAdultOnly ? 1 : 0;
 			pstmt.setInt(4, val);
 			pstmt.executeUpdate();
+			DBHelper.close();
 			return true;
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			DBHelper.close();
 			return false;
 		}
 	}
@@ -43,12 +45,13 @@ public class ProductHelper {
 		String query = "SELECT * FROM Product where ProductCode=" + productCode;
 
 		try {
-			Connection conn = this.connect();
+			Connection conn = DBHelper.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			
 			Product p = new Product(productCode, rs.getString("ProductName"), 
 						1, rs.getInt("ProductPrice"), (rs.getInt("IsAdultOnly") == 1));
+			DBHelper.close();
 			return p;
 		} catch (SQLException e) {
 			return null;
@@ -60,7 +63,7 @@ public class ProductHelper {
 		List<Product> list = new LinkedList<Product>();
 
 		try {
-			Connection conn = this.connect();
+			Connection conn = DBHelper.connect();
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			
@@ -75,6 +78,7 @@ public class ProductHelper {
 						
 				list.add(tempProduct);
 			}
+			DBHelper.close();
 			return list.iterator();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
