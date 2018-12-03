@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBHelper {
-	private final static String dbName = "ProductDB.db";
+	public final static String dbName = "ProductDB.db";
 	private static Connection connect;
 	
 	public static Connection connect() {

@@ -1,8 +1,14 @@
 package basicpos.view;
 import java.io.UnsupportedEncodingException;
 
-public class ReceiptView {
+public class ReceiptView implements PrintView {
 	private final static char WALL = '-';
+	
+	private int index;
+	private String prodName;
+	private int prodCount;
+	private int prodPrice;
+	
 	public static enum PurchaseType {
 		PURCHASE_CARD,
 		PURCHASE_CASH
@@ -34,7 +40,7 @@ public class ReceiptView {
 		}
 	}
 
-	public void printReceiptHead() {
+	public void printHead() {
 		if(this.PrintType == Print.PRINT_RECEIPT) {
 			System.out.println("번호  물품명              수량      단가      총액");
 		} else {
@@ -43,7 +49,7 @@ public class ReceiptView {
 		
 	}
 	
-	public void printReceiptLine() {
+	public void printLine() {
 		int printCount = 50; //Default print count
 		if(this.PrintType == Print.PRINT_INFO) {
 			printCount = 39;
@@ -54,6 +60,45 @@ public class ReceiptView {
 		System.out.println();
 		//System.out.println("------------------------------------------");
 	}
+	
+	public void printBody() {
+		if(this.prodCount == 0) {
+			System.out.printf("  %6d  ", this.index);
+			
+			System.out.print(this.prodName);
+			for(int i = 0; i < (20 - getLength(this.prodName)); i++)
+				System.out.print(" ");
+			
+			System.out.printf("%,9d\n", this.prodPrice);
+		} else {
+			System.out.printf("  %2d  ", this.index);
+			
+			System.out.print(this.prodName);
+			for(int i = 0; i < (20 - getLength(this.prodName)); i++)
+				System.out.print(" ");
+				
+			System.out.printf("  %2d %,9d %,9d\n", this.prodCount, this.prodPrice, 
+						(this.prodPrice * this.prodCount));
+		}
+	}
+	
+	public void setReceiptProduct(int index, String prodName, int prodCount, int prodPrice) {
+		this.index = index;
+		this.prodName = prodName;
+		this.prodCount = prodCount;
+		this.prodPrice = prodPrice;
+	}
+	
+	public void setReceiptProduct(int index, String prodName, int prodPrice) {
+		this.index = index;
+		this.prodName = prodName;
+		this.prodCount = 0;
+		this.prodPrice = prodPrice;
+	}
+	
+	
+	
+	/*
 	
 	public void printReceiptProduct(int index, String prodName, int prodCount, int prodPrice) {
 
@@ -77,7 +122,7 @@ public class ReceiptView {
 		
 		System.out.printf("%,9d\n", prodPrice);
 		
-	}
+	}*/
 	
 	public void printDiscountPrice(int discountPrice) {
 		System.out.printf("할 인 액 %,41d\n", discountPrice);

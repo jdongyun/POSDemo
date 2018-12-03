@@ -129,18 +129,19 @@ public class PurchaseController extends CalcDao {
 		int index = 1;
 		ReceiptView receiptView = new ReceiptView();
 
-		receiptView.printReceiptLine();
-		receiptView.printReceiptHead();
-		receiptView.printReceiptLine();
+		receiptView.printLine();
+		receiptView.printHead();
+		receiptView.printLine();
 		while (ite.hasNext()) {
 			Product tempProduct = ite.next();
-			receiptView.printReceiptProduct(index, tempProduct.getProductName(), tempProduct.getProductCount(),
+			receiptView.setReceiptProduct(index, tempProduct.getProductName(), tempProduct.getProductCount(),
 					tempProduct.getProductPrice());
+			receiptView.printBody();
 			index++;
 		}
-		receiptView.printReceiptLine();
+		receiptView.printLine();
 		receiptView.printReceiptPrice(this.cart.getAllPrice());
-		receiptView.printReceiptLine();
+		receiptView.printLine();
 	}
 
 	private void printReceipt(int purchaseType, int receivedCash, int discountPrice, String taxNumber) {
@@ -149,20 +150,21 @@ public class PurchaseController extends CalcDao {
 		int index = 1;
 		ReceiptView receiptView = new ReceiptView();
 
-		receiptView.printReceiptLine();
-		receiptView.printReceiptHead();
-		receiptView.printReceiptLine();
+		receiptView.printLine();
+		receiptView.printHead();
+		receiptView.printLine();
 		
 		//계산 목록 시작
 		while (ite.hasNext()) {
 			Product tempProduct = ite.next();
-			receiptView.printReceiptProduct(index, tempProduct.getProductName(), tempProduct.getProductCount(),
+			receiptView.setReceiptProduct(index, tempProduct.getProductName(), tempProduct.getProductCount(),
 					tempProduct.getProductPrice());
+			receiptView.printBody();
 		}
 		//계산 목록 끝
 		
 		//판매액 및 결제방식 시작
-		receiptView.printReceiptLine();
+		receiptView.printLine();
 		receiptView.printDiscountPrice(discountPrice);
 		receiptView.printReceiptPrice(this.cart.getAllPrice() - discountPrice);
 		if (purchaseType == 1) {
@@ -173,24 +175,24 @@ public class PurchaseController extends CalcDao {
 		//판매액 및 결제방식 끝
 		
 		//받은금액 시작
-		receiptView.printReceiptLine();
+		receiptView.printLine();
 		receiptView.printCashData(receivedCash, this.cart.getAllPrice() - discountPrice);
-		receiptView.printReceiptLine();
+		receiptView.printLine();
 		//받은금액 끝
 		
 		//현금영수증 시작
 		if(taxNumber != null) {
 			if (taxNumber.length() == 10) { // 사업자 증빙용
 				receiptView.printTaxNumberForBuisness(taxNumber);
-				receiptView.printReceiptLine();
+				receiptView.printLine();
 			} else if (taxNumber.length() == 11) { // 개인용
 				receiptView.printTaxNumberForNormal(taxNumber);
-				receiptView.printReceiptLine();
+				receiptView.printLine();
 			}
 		}
 		//현금영수증 끝
 
-		System.out.println();
+		appView.printMessage("");
 	}
 	
 	private int usePoint() {

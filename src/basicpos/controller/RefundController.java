@@ -68,17 +68,18 @@ public class RefundController extends CalcDao {
 		int index = 1;
 		ReceiptView receiptView = new ReceiptView();
 
-		receiptView.printReceiptLine();
-		receiptView.printReceiptHead();
-		receiptView.printReceiptLine();
+		receiptView.printLine();
+		receiptView.printHead();
+		receiptView.printLine();
 		while (ite.hasNext()) {
 			Product tempProduct = ite.next();
-			receiptView.printReceiptProduct(index, tempProduct.getProductName(), tempProduct.getProductCount(),
+			receiptView.setReceiptProduct(index, tempProduct.getProductName(), tempProduct.getProductCount(),
 					tempProduct.getProductPrice());
+			receiptView.printBody();
 			index++;
 		}
-		receiptView.printReceiptLine();
+		receiptView.printLine();
 		receiptView.printReceiptPrice(this.cart.getAllPrice());
-		receiptView.printReceiptLine();
+		receiptView.printLine();
 	}
 }

@@ -16,8 +16,4 @@ public class Point {
 	public int getUserPoint() {
 		return this.userPoint;
 	}
-	
-	public String toString() {
-		return String.format("%16d     %,d", userCode, userPoint);
-	}
 }

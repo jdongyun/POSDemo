@@ -8,8 +8,6 @@ public class PointHelper {
 	/*
 	 * 포인트 적립 및 포인트 사용
 	 */
-	private final static String dbName = "ProductDB.db";
-
 	public static boolean setPoint(int userCode, int userPoint) {
 		
 		String query = "INSERT INTO `Point`(`UserCode`, `UserPoint`) "
@@ -78,7 +76,7 @@ public class PointHelper {
 	}
 
 	public static void createNewDatabase() {
-		String url = "jdbc:sqlite:" + dbName;
+		String url = "jdbc:sqlite:" + DBHelper.dbName;
 		try {
 			Connection conn = DriverManager.getConnection(url);
 			if (conn != null) {
@@ -93,7 +91,7 @@ public class PointHelper {
 	}
 
 	public static void createNewTable() { // SQLite connection string
-		String url = "jdbc:sqlite:" + dbName;
+		String url = "jdbc:sqlite:" + DBHelper.dbName;
 		String sql = "CREATE TABLE `Point` (\n" + " `UserCode` integer UNIQUE,\n"
 				+ " `UserPoint` integer NOT NULL\n" + ");";
 

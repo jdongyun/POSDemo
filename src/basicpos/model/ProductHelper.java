@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ProductHelper {
-	private final static String dbName = "ProductDB.db";
 /*
 	private Connection connect() {
 		// SQLite connection string
@@ -35,7 +34,25 @@ public class ProductHelper {
 			DBHelper.close();
 			return true;
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
+			DBHelper.close();
+			return false;
+		}
+	}
+	
+	public static boolean deleteProduct(int prodCode) {
+		String query = "DELETE FROM `Product`"
+				+ "WHERE `ProductCode`=?";
+
+		try {
+			Connection conn = DBHelper.connect();
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, prodCode);
+			pstmt.executeUpdate();
+			DBHelper.close();
+			return true;
+		} catch (SQLException e) {
+			//System.out.println(e.getMessage());
 			DBHelper.close();
 			return false;
 		}
@@ -58,7 +75,7 @@ public class ProductHelper {
 		}
 	}
 
-	public static Iterator<Product> getProductDB() {
+	public static Iterator<Product> getProductList() {
 		String query = "SELECT * FROM Product";
 		List<Product> list = new LinkedList<Product>();
 
@@ -87,7 +104,7 @@ public class ProductHelper {
 	}
 	
 	public static void createNewDatabase() {
-		String url = "jdbc:sqlite:" + dbName;
+		String url = "jdbc:sqlite:" + DBHelper.dbName;
 		try {
 			Connection conn = DriverManager.getConnection(url);
 			if (conn != null) {
@@ -102,7 +119,7 @@ public class ProductHelper {
 	}
 
 	public static void createNewTable() { // SQLite connection string
-		String url = "jdbc:sqlite:" + dbName;
+		String url = "jdbc:sqlite:" + DBHelper.dbName;
 
 		// SQL statement for creating a new table
 		String sql = "CREATE TABLE `Product` (\n" + " `ProductCode` integer UNIQUE,\n"
