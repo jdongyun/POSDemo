@@ -3,21 +3,16 @@ package basicpos.controller;
 import java.util.Collection;
 import java.util.Iterator;
 
-import basicpos.impl.PayController;
-import basicpos.model.Cart;
+import basicpos.dao.CalcDao;
 import basicpos.model.PointHelper;
 import basicpos.model.Product;
-import basicpos.model.ProductHelper;
-import basicpos.view.AppView;
 import basicpos.view.ReceiptView;
 
-public class PurchaseController extends PayController {
+public class PurchaseController extends CalcDao {
 	private static double POINT_RATE = 0.01;
-	private PointHelper pointHelper;
 	
 	@Override
 	protected void pay() {
-		this.pointHelper = new PointHelper();
 
 		this.printAllProduct();
 
@@ -26,87 +21,102 @@ public class PurchaseController extends PayController {
 		if (cart.hasAdultProduct()) {
 			appView.printNotice("나이를 확인해야 하는 물품이 있습니다.\n");
 		}
-
-		appView.printNotice("결제 수단을 선택해 주세요.");
-		appView.printMessage("(1) 신용카드     (2) 현금     (0) 종료");
-		int purchaseType = 0;
 		
-		while (true) {
-			purchaseType = appView.inputInt();
-			if (purchaseType == 1 || purchaseType == 2|| purchaseType == 3) {
-				break;
-			}
-			if (purchaseType == 0) {
-				return;
-			}
-			appView.printError("올바른 번호가 아닙니다.");
-		}
-
+		int purchaseType = 0;
 		int receivedCash = this.cart.getAllPrice(); // 카드결제일 때의 기본값은 결제금액.
 		int discountPrice = 0;
 		String taxNumber = null;
 
-		if(purchaseType == 1) {
+		while(true) {
 			
-			appView.printNotice("신용카드 결제입니다.");
 			
-			discountPrice = usePoint();
+			appView.printNotice("결제 수단을 선택해 주세요.");
+			appView.printMessage("(1) 신용카드     (2) 현금     (0) 종료");
 			
-			appView.printNotice("신용카드 번호를 입력해 주세요.");
-			String cardNumber = appView.inputString();
-			appView.printNotice("결제가 완료되었습니다.");
 			
-		} else if (purchaseType == 2) {
-			appView.printNotice("현금 결제입니다.");
-			
-			discountPrice = usePoint();
-			
-			appView.printNotice(String.format("판매액은 %,d원입니다. 받으신 금액을 입력해 주세요.\n", cart.getAllPrice() - discountPrice));
-			receivedCash = appView.inputInt();
-			
-			appView.printNotice(String.format("받으신 금액은 %,d원이며, 거스름돈은 %,d원입니다.\n", receivedCash,
-					(receivedCash - (cart.getAllPrice() - discountPrice))));
-			
-			appView.printNotice("금액을 정산하신 후 엔터 버튼을 눌러주세요.");
-			appView.inputEnter();
-			
-			appView.printNotice("현금영수증 여부를 선택해 주세요.");
-			appView.printMessage("(1) 사업자 증빙용   (2) 개인용     (0) 건너뛰기");
-			int receiptType = 0;
-			boolean isComplete = false;
-			while (!isComplete) {
-				receiptType = appView.inputInt();
-				
-				switch(receiptType) {
-				case 1:
-					appView.printNotice("사업자 번호를 입력하세요.");
-					taxNumber = appView.inputString();
-					while (taxNumber.length() != 10) {
-						appView.printError("올바른 번호가 아닙니다.");
-						taxNumber = appView.inputString();
-					}
-					isComplete = true;
+			while (true) {
+				purchaseType = appView.inputInt();
+				if (purchaseType == 1 || purchaseType == 2|| purchaseType == 3) {
 					break;
-				case 2:
-					// 개인 휴대전화 번호 입력 받음(11자리)
-					appView.printNotice("휴대전화 번호를 입력하세요.");
-					taxNumber = appView.inputString();
-					while (taxNumber.length() != 11) {
-						appView.printError("올바른 번호가 아닙니다.");
-						taxNumber = appView.inputString();
-					}
-					isComplete = true;
-					break;
-				case 0:
-					isComplete = true;
-					break;
-				default:
-					//Nothing. goto while loop
 				}
-				
+				if (purchaseType == 0) {
+					return;
+				}
+				appView.printError("올바른 번호가 아닙니다.");
 			}
+			
+			if(purchaseType == 1) {
+				
+				appView.printNotice("신용카드 결제입니다.");
+				
+				discountPrice = usePoint();
+				if(discountPrice == -1) //usePoint에서 -1이 입력되면 뒤로가기로 체크
+					continue;
+				
+				appView.printNotice("신용카드 번호를 입력해 주세요. (뒤로 가기는 0 입력)");
+				String cardNumber = appView.inputString();
+				if(cardNumber.equals("0")) continue;
+				
+				appView.printNotice("결제가 완료되었습니다.");
+				
+			} else if (purchaseType == 2) {
+				appView.printNotice("현금 결제입니다.");
+				
+				discountPrice = usePoint();
+				if(discountPrice == -1) //usePoint에서 -1이 입력되면 뒤로가기로 체크
+					continue;
+				
+				appView.printNotice(String.format("판매액은 %,d원입니다. 받으신 금액을 입력해 주세요.\n", cart.getAllPrice() - discountPrice));
+				receivedCash = appView.inputInt();
+				
+				appView.printNotice(String.format("받으신 금액은 %,d원이며, 거스름돈은 %,d원입니다.\n", receivedCash,
+						(receivedCash - (cart.getAllPrice() - discountPrice))));
+				
+				appView.printNotice("금액을 정산하신 후 엔터 버튼을 눌러주세요.");
+				appView.inputEnter();
+				
+				appView.printNotice("현금영수증 여부를 선택해 주세요.");
+				appView.printMessage("(1) 사업자 증빙용   (2) 개인용     (0) 건너뛰기");
+				int receiptType = 0;
+				boolean isComplete = false;
+				while (!isComplete) {
+					receiptType = appView.inputInt();
+					
+					switch(receiptType) {
+					case 1:
+						appView.printNotice("사업자 번호를 입력하세요.");
+						taxNumber = appView.inputString();
+						while (taxNumber.length() != 10) {
+							appView.printError("올바른 번호가 아닙니다.");
+							taxNumber = appView.inputString();
+						}
+						isComplete = true;
+						break;
+					case 2:
+						// 개인 휴대전화 번호 입력 받음(11자리)
+						appView.printNotice("휴대전화 번호를 입력하세요.");
+						taxNumber = appView.inputString();
+						while (taxNumber.length() != 11) {
+							appView.printError("올바른 번호가 아닙니다.");
+							taxNumber = appView.inputString();
+						}
+						isComplete = true;
+						break;
+					case 0:
+						isComplete = true;
+						break;
+					default:
+						//Nothing. goto while loop
+					}
+					
+				}
+			}
+			
+			
+			
+			break;
 		}
-
+		
 		System.out.println("\n\n");
 
 		this.printReceipt(purchaseType, receivedCash, discountPrice, taxNumber);
@@ -185,13 +195,14 @@ public class PurchaseController extends PayController {
 	
 	private int usePoint() {
 		appView.printNotice("포인트를 적립 또는 사용하시겠습니까?");
-		appView.printMessage("(1) 적립     (2) 사용     (0) 아니요");
+		appView.printMessage("(1) 적립     (2) 사용     (9) 뒤로 가기     (0) 아니요");
 		int pointType = 0;
 		while (true) {
 			pointType = appView.inputInt();
 			if (pointType == 1 || pointType == 2 || pointType == 0) {
 				break;
 			}
+			if(pointType == 9) return -1;
 			appView.printError("올바른 번호가 아닙니다.");
 		}
 		if(pointType == 1) {
@@ -199,10 +210,10 @@ public class PurchaseController extends PayController {
 			int pointCardNumber = 0;
 			Integer userPoint;
 			while(true) {
-				appView.printNotice("사용자의 포인트 카드 번호를 입력해 주세요. (종료는 0)");
+				appView.printNotice("사용자의 포인트 카드 번호를 입력해 주세요. (뒤로 가기는 0 입력)");
 				pointCardNumber = appView.inputInt();
-				if(pointCardNumber == 0) return 0;
-				userPoint = pointHelper.getPoint(pointCardNumber);
+				if(pointCardNumber == 0) return -1;
+				userPoint = PointHelper.getPoint(pointCardNumber);
 				if(userPoint == null) {
 					appView.printError("해당하는 포인트 카드 번호가 없습니다.");
 					continue;
@@ -210,17 +221,17 @@ public class PurchaseController extends PayController {
 				break;
 			}
 			int addPoint = (int)(((double) this.cart.getAllPrice()) * POINT_RATE);
-			pointHelper.setPoint(pointCardNumber, userPoint + addPoint);
+			PointHelper.setPoint(pointCardNumber, userPoint + addPoint);
 			appView.printNotice(String.format("%,d 포인트가 적립되었습니다.", addPoint));
 		} else if(pointType == 2) {
 			appView.printNotice("포인트를 사용합니다.");
 			int pointCardNumber = 0;
 			Integer userPoint;
 			while(true) {
-				appView.printNotice("사용자의 포인트 카드 번호를 입력해 주세요. (종료는 0)");
+				appView.printNotice("사용자의 포인트 카드 번호를 입력해 주세요. (뒤로 가기는 0 입력)");
 				pointCardNumber = appView.inputInt();
-				if(pointCardNumber == 0) return 0;
-				userPoint = pointHelper.getPoint(pointCardNumber);
+				if(pointCardNumber == 0) return -1;
+				userPoint = PointHelper.getPoint(pointCardNumber);
 				if(userPoint == null) {
 					appView.printError("해당하는 포인트 카드 번호가 없습니다.");
 					continue;
@@ -241,7 +252,7 @@ public class PurchaseController extends PayController {
 				}
 				break;
 			}
-			pointHelper.setPoint(pointCardNumber, userPoint - usePoint);
+			PointHelper.setPoint(pointCardNumber, userPoint - usePoint);
 			appView.printNotice(String.format("%,d원이 할인되었습니다.", usePoint));
 			return usePoint;
 		}

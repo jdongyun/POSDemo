@@ -10,7 +10,7 @@ public class PointHelper {
 	 */
 	private final static String dbName = "ProductDB.db";
 
-	public boolean setPoint(int userCode, int userPoint) {
+	public static boolean setPoint(int userCode, int userPoint) {
 		
 		String query = "INSERT INTO `Point`(`UserCode`, `UserPoint`) "
 					+ "VALUES("+ userCode +"," + userPoint +")";
@@ -34,7 +34,7 @@ public class PointHelper {
         }
 	}
 	
-	public Integer getPoint(int userCode) {
+	public static Integer getPoint(int userCode) {
 		String query = "SELECT * FROM Point where UserCode=" + userCode;
 
 		try {
@@ -54,7 +54,7 @@ public class PointHelper {
 		}
 	}
 	
-	public Iterator<Point> getPointDB() {
+	public static Iterator<Point> getPointDB() {
 		String query = "SELECT * FROM Point";
 		List<Point> list = new LinkedList<Point>();
 

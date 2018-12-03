@@ -80,12 +80,12 @@ public class ReceiptView {
 	}
 	
 	public void printDiscountPrice(int discountPrice) {
-		System.out.printf("할인액   %,41d\n", discountPrice);
+		System.out.printf("할 인 액 %,41d\n", discountPrice);
 	}
 	
 	public void printReceiptPrice(int sumPrice) {
 		
-		System.out.printf("결제액   %,41d\n", sumPrice);
+		System.out.printf("결 제 액 %,41d\n", sumPrice);
 	}
 	
 	public void printPurchageType(PurchaseType pType) {

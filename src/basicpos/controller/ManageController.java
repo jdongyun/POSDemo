@@ -37,7 +37,7 @@ public class ManageController {
 				this.printProduct();
 				break;
 			case 2:
-				appView.printNotice("고객 포인트 정보를 출력합니다.");
+				appView.printNotice("고객들의 포인트 정보를 출력합니다.");
 				this.printPointData();
 				break;
 			case 0:
@@ -51,8 +51,7 @@ public class ManageController {
 	
 	private void printProduct() {
 		ReceiptView receiptView = new ReceiptView(ReceiptView.Print.PRINT_INFO);
-		ProductHelper pHelper = new ProductHelper();
-		Iterator<Product> ite = pHelper.getProductDB();
+		Iterator<Product> ite = ProductHelper.getProductDB();
 		
 		appView.printMessage("");
 		receiptView.printReceiptLine();
@@ -70,8 +69,7 @@ public class ManageController {
 	}
 	
 	private void printPointData() {
-		PointHelper pHelper = new PointHelper();
-		Iterator<Point> ite = pHelper.getPointDB();
+		Iterator<Point> ite = PointHelper.getPointDB();
 		
 		appView.printMessage("");
 		appView.printMessage("고객 포인트 코드     잔액 정보");

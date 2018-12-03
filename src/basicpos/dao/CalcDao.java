@@ -1,19 +1,16 @@
-package basicpos.impl;
+package basicpos.dao;
 
 import basicpos.model.Cart;
-import basicpos.model.DBHelper;
 import basicpos.model.Product;
 import basicpos.model.ProductHelper;
 import basicpos.view.AppView;
 
-public abstract class PayController {
+public abstract class CalcDao {
 	protected AppView appView;
-	protected ProductHelper prodData;
 	protected Cart cart;
 	
-	public PayController() {
+	public CalcDao() {
 		this.appView = new AppView();
-		this.prodData = new ProductHelper();
 		this.cart = new Cart();
 	}
 	
@@ -41,7 +38,7 @@ public abstract class PayController {
 			if (input == 0)
 				break;
 
-			product = prodData.getProduct(input);
+			product = ProductHelper.getProduct(input);
 
 			if (product == null) {
 				appView.printError("올바른 코드 번호가 아닙니다.");

@@ -1,14 +1,8 @@
 package basicpos.controller;
 
-import java.util.Iterator;
-
-import basicpos.impl.PayController;
-import basicpos.model.PointHelper;
-import basicpos.model.Product;
-import basicpos.model.ProductHelper;
+import basicpos.dao.CalcDao;
 import basicpos.view.AppView;
 import basicpos.view.MainView;
-import basicpos.view.ReceiptView;
 
 public class AppController {
 	private AppView appView;
@@ -32,11 +26,11 @@ public class AppController {
 			
 			switch(input) {
 			case 1: //물품 계산
-				PayController pc = new PurchaseController();
+				CalcDao pc = new PurchaseController();
 				pc.run();
 				break;
 			case 2: //물품 환불
-				PayController rc = new RefundController();
+				CalcDao rc = new RefundController();
 				rc.run();
 				break;
 			case 3: //물품 목록 확인 
@@ -50,7 +44,5 @@ public class AppController {
 				appView.printError("다시 입력해 주십시오.");
 			}
 		}
-		
 	}
-	
 }

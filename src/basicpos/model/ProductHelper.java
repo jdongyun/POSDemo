@@ -19,7 +19,7 @@ public class ProductHelper {
 		return conn;
 	}*/
 	
-	public boolean insertProduct(int prodCode, String prodName, int prodPrice, boolean isAdultOnly) {
+	public static boolean insertProduct(int prodCode, String prodName, int prodPrice, boolean isAdultOnly) {
 		String query = "INSERT INTO `Product`(`ProductCode`, `ProductName`, `ProductPrice`, `IsAdultOnly`) "
 				+ "VALUES(?,?,?,?)";
 
@@ -41,7 +41,7 @@ public class ProductHelper {
 		}
 	}
 	
-	public Product getProduct(int productCode) {
+	public static Product getProduct(int productCode) {
 		String query = "SELECT * FROM Product where ProductCode=" + productCode;
 
 		try {
@@ -58,7 +58,7 @@ public class ProductHelper {
 		}
 	}
 
-	public Iterator<Product> getProductDB() {
+	public static Iterator<Product> getProductDB() {
 		String query = "SELECT * FROM Product";
 		List<Product> list = new LinkedList<Product>();
 
