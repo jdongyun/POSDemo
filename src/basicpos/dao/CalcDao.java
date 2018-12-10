@@ -93,7 +93,7 @@ public abstract class CalcDao {
 			Product tempProduct = ite.next();
 			if(CALC_TYPE == Enums.TYPE_PURCHASE) { //결제
 				tempProduct.setProductRemain(tempProduct.getProductRemain() - tempProduct.getProductCount());
-			} else { //환불
+			} else if(CALC_TYPE == Enums.TYPE_REFUND) { //환불
 				tempProduct.setProductRemain(tempProduct.getProductRemain() + tempProduct.getProductCount());
 			}
 			

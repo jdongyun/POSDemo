@@ -18,6 +18,7 @@ public class RefundController extends CalcDao {
 	private RefundController(Enums type) {
 		super(type);
 	}
+	
 	@Override
 	protected void pay() {
 		this.printAllProduct();

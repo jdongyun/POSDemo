@@ -13,6 +13,8 @@ import basicpos.view.ReceiptView;
 
 public class PurchaseController extends CalcDao {
 	
+	private final static double POINT_RATE = 0.01;
+	
 	public PurchaseController() {
 		this(Enums.TYPE_PURCHASE);
 	}
@@ -20,9 +22,6 @@ public class PurchaseController extends CalcDao {
 	private PurchaseController(Enums type) {
 		super(type);
 	}
-
-
-	private static double POINT_RATE = 0.01;
 	
 	@Override
 	protected void pay() {

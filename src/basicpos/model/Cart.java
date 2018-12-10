@@ -67,13 +67,4 @@ public class Cart {
 	public boolean isEmpty() {
 		return (this.cartPrice == 0);
 	}
-	/*
-	 * 삭제는 나중에 구현합니다.
-	public boolean removeProduct(int prodCode, int prodCount) {
-		
-		if(cartMap.containsKey(prodCode)) { //Map에 객체가 있으므로, prodCount만큼 빼면 된다.
-			
-		}
-	}
-	*/
 }
