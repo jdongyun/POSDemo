@@ -11,7 +11,7 @@ public class MainView {
 		MARGIN_TWO
 	}
 	
-	private List<String> list;
+	protected List<String> list;
 	
 	public MainView() {
 		list = new ArrayList<String>();

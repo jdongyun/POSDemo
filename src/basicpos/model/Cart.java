@@ -63,6 +63,10 @@ public class Cart {
 		}
 		return false;
 	}
+	
+	public boolean isEmpty() {
+		return (this.cartPrice == 0);
+	}
 	/*
 	 * 삭제는 나중에 구현합니다.
 	public boolean removeProduct(int prodCode, int prodCount) {

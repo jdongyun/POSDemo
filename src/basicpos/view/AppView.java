@@ -51,5 +51,5 @@ public class AppView {
 	public void clearInputBuffer() {
 		scanner.nextLine();
 	}
-	
+
 }

@@ -14,17 +14,19 @@ public class Product {
 	private int productCount;
 	private int productPrice;
 	private boolean isAdultOnly;
+	private int productRemain;
 	
-	public Product(int prodCode, String prodName, int prodCount, int prodPrice, boolean isAdult) {
+	public Product(int prodCode, String prodName, int prodCount, int prodPrice, boolean isAdult, int productRemain) {
 		this.productCode = prodCode;
 		this.productName = prodName;
 		this.productCount = prodCount;
 		this.productPrice = prodPrice;
 		this.isAdultOnly = isAdult;
+		this.productRemain = productRemain;
 	}
 	
 	public Product() {
-		this(0, "", 1, 0, false);
+		this(0, "", 1, 0, false, 1);
 	}
 
 	public void setProductNumber(int prodCode) {
@@ -47,6 +49,10 @@ public class Product {
 		this.isAdultOnly = isAdult;
 	}
 	
+	public void setProductRemain(int prodRemain) {
+		this.productRemain = prodRemain;
+	}
+	
 	public int getProductCode() {
 		return this.productCode;
 	}
@@ -65,6 +71,10 @@ public class Product {
 	
 	public boolean getIsAdultOnly() {
 		return this.isAdultOnly;
+	}
+	
+	public int getProductRemain() {
+		return this.productRemain;
 	}
 	
 	public String getStringData() {

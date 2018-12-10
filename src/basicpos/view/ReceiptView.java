@@ -2,32 +2,25 @@ package basicpos.view;
 import java.io.UnsupportedEncodingException;
 
 public class ReceiptView implements PrintView {
-	private final static char WALL = '-';
+	protected final static char WALL = '-';
+	protected int PRINT_COUNT = 50;
+	
+	protected String prodName;
+	protected int prodCount;
+	protected int prodPrice;
 	
 	private int index;
-	private String prodName;
-	private int prodCount;
-	private int prodPrice;
 	
 	public static enum PurchaseType {
 		PURCHASE_CARD,
 		PURCHASE_CASH
 	}
-	private Print PrintType;
-	public static enum Print {
-		PRINT_RECEIPT,
-		PRINT_INFO
-	}
 	
 	public ReceiptView() {
-		this.PrintType = Print.PRINT_RECEIPT;
+		
 	}
 	
-	public ReceiptView(Print printType) {
-		this.PrintType = printType;
-	}
-	
-	private int getLength(String str) {
+	protected int getLength(String str) {
 		//고정폭 글꼴과 EUC-KR 문자 인코딩을 이용,
 		//한글이 EUC-KR 인코딩에서 2바이트인 점을 이용해,
 		//고정폭 글꼴에서 차지하는 총 문자의 너비를 계산.
@@ -41,20 +34,12 @@ public class ReceiptView implements PrintView {
 	}
 
 	public void printHead() {
-		if(this.PrintType == Print.PRINT_RECEIPT) {
-			System.out.println("번호  물품명              수량      단가      총액");
-		} else {
-			System.out.println("물품번호  물품명                   단가");
-		}
-		
+		System.out.println("번호  물품명              수량      단가      총액");
 	}
 	
 	public void printLine() {
-		int printCount = 50; //Default print count
-		if(this.PrintType == Print.PRINT_INFO) {
-			printCount = 39;
-		}
-		for(int i = 0; i < printCount; i++) {
+		//int printCount = 50; //Default print count
+		for(int i = 0; i < PRINT_COUNT; i++) {
 			System.out.print(WALL);
 		}
 		System.out.println();
@@ -82,19 +67,14 @@ public class ReceiptView implements PrintView {
 		}
 	}
 	
-	public void setReceiptProduct(int index, String prodName, int prodCount, int prodPrice) {
+	public void setData(int index, String prodName, int prodCount, int prodPrice) {
 		this.index = index;
 		this.prodName = prodName;
 		this.prodCount = prodCount;
 		this.prodPrice = prodPrice;
 	}
 	
-	public void setReceiptProduct(int index, String prodName, int prodPrice) {
-		this.index = index;
-		this.prodName = prodName;
-		this.prodCount = 0;
-		this.prodPrice = prodPrice;
-	}
+	
 	
 	
 	

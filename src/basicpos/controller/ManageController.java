@@ -10,6 +10,8 @@ import basicpos.model.ProductHelper;
 import basicpos.view.AppView;
 import basicpos.view.MainView;
 import basicpos.view.PointView;
+import basicpos.view.PrintLineView;
+import basicpos.view.ProductView;
 import basicpos.view.ReceiptView;
 
 public class ManageController {
@@ -25,7 +27,8 @@ public class ManageController {
 		mainView.addView("1. 물품 목록");
 		mainView.addView("2. 고객 포인트 정보");
 		mainView.addView("3. 물품 추가");
-		mainView.addView("4. 물품 제거");
+		mainView.addView("4. 물품 수정");
+		mainView.addView("5. 물품 제거");
 		mainView.addView("0. 뒤로 가기");
 		
 		appView.printNotice("관리자 페이지입니다.");
@@ -47,7 +50,11 @@ public class ManageController {
 				appView.printNotice("물품을 추가합니다.");
 				this.insertProduct();
 				break;
-			case 4: //물품 추가
+			case 4: //물품 수정
+				appView.printNotice("물품을 수정합니다.");
+				this.updateProduct();
+				break;
+			case 5: //물품 제거
 				appView.printNotice("물품을 제거합니다.");
 				this.deleteProduct();
 				break;
@@ -61,22 +68,23 @@ public class ManageController {
 	}
 	
 	private void printProduct() {
-		ReceiptView receiptView = new ReceiptView(ReceiptView.Print.PRINT_INFO);
+		ProductView productView = new ProductView();
 		Iterator<Product> ite = ProductHelper.getProductList();
 		
 		appView.printMessage("");
-		receiptView.printLine();
-		receiptView.printHead();
-		receiptView.printLine();
+		productView.printLine();
+		productView.printHead();
+		productView.printLine();
 		while(ite.hasNext()) {
 			Product tempProduct = ite.next();
 			
-			receiptView.setReceiptProduct(tempProduct.getProductCode(), 
+			productView.setData(tempProduct.getProductCode(), 
 					tempProduct.getProductName(), 
-					tempProduct.getProductPrice());
-			receiptView.printBody();
+					tempProduct.getProductPrice(),
+					tempProduct.getProductRemain());
+			productView.printBody();
 		}
-		receiptView.printLine();
+		productView.printLine();
 		appView.printMessage("");
 	}
 	
@@ -102,6 +110,7 @@ public class ManageController {
 		String productName = "";
 		int productPrice = 0;
 		boolean isAdultOnly = false;
+		int productRemain = 0;
 
 		appView.printNotice("추가할 물품의 코드를 입력해 주세요.");
 		productCode = appView.inputInt();
@@ -113,7 +122,7 @@ public class ManageController {
 		productPrice = appView.inputInt();
 		
 		while(true) {
-			appView.printNotice("추가할 물품이 나이 확인이 필요한지 입력해 주세요. (y/n)");
+			appView.printNotice("추가할 물품이 연령 확인이 필요한지 입력해 주세요. (y/n)");
 			String temp = appView.inputString();
 			if(temp.equals("y")) {
 				isAdultOnly = true;
@@ -126,10 +135,70 @@ public class ManageController {
 			}
 		}
 		
-		if(ProductHelper.insertProduct(productCode, productName, productPrice, isAdultOnly)) {
+		appView.printNotice("추가할 물품의 재고 개수를 입력해 주세요.");
+		productRemain = appView.inputInt();
+		
+		
+		if(ProductHelper.insertProduct(productCode, productName, productPrice, isAdultOnly, productRemain)) {
 			appView.printNotice("물품 추가가 완료되었습니다.");
 		} else {
 			appView.printError("물품 추가 중 문제가 발생하였습니다.");
+		}
+	}
+	
+	private void updateProduct() {
+		this.printProduct();
+		appView.printNotice("수정할 물품의 코드를 입력해 주세요.");
+		int productCode = appView.inputInt();
+		Product product = ProductHelper.getProduct(productCode);
+		
+		if(product != null) {
+			appView.printNotice("수정할 부분을 선택해 주세요.");
+			
+			PrintLineView plView = new PrintLineView();
+			plView.addView("(1) 물품명");
+			plView.addView("(2) 단가");
+			plView.addView("(3) 재고수량");
+			plView.addView("(0) 취소");
+			plView.printList();
+			//appView.printMessage("(1) 물품명   (2) 단가   (3) 재고수량   (0) 취소");
+			
+			int input = appView.inputInt();
+			int tempInt;
+			String tempString;
+			switch(input) {
+			case 1:
+				appView.printNotice("수정할 물품명을 입력해 주세요.");
+				tempString = appView.inputString();
+				product.setProductName(tempString);
+				ProductHelper.updateProduct(product);
+				appView.printNotice("수정이 완료되었습니다.");
+				break;
+				
+			case 2:
+				appView.printNotice("수정할 물품의 단가를 입력해 주세요.");
+				tempInt = appView.inputInt();
+				product.setProductPrice(tempInt);
+				ProductHelper.updateProduct(product);
+				appView.printNotice("수정이 완료되었습니다.");
+				break;
+
+			case 3:
+				appView.printNotice("수정할 물품의 재고 수량을 입력해 주세요.");
+				tempInt = appView.inputInt();
+				product.setProductRemain(tempInt);
+				ProductHelper.updateProduct(product);
+				appView.printNotice("수정이 완료되었습니다.");
+				break;
+
+			case 0:
+				appView.printNotice("물품 수정을 취소합니다.");
+				break;
+			default:
+				appView.printError("입력이 잘못되었습니다.");
+			}
+		} else {
+			appView.printError("해당하는 코드의 물품이 없습니다.");
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package basicpos.controller;
 
 import basicpos.dao.CalcDao;
+import basicpos.model.ProductHelper;
 import basicpos.view.AppView;
 import basicpos.view.MainView;
 
@@ -14,6 +15,7 @@ public class AppController {
 	}
 	
 	public void run() {
+		
 		
 		mainView.addView("1. 물품 계산");
 		mainView.addView("2. 물품 환불");

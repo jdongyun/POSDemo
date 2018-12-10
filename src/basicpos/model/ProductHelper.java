@@ -5,22 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ProductHelper {
-/*
-	private Connection connect() {
-		// SQLite connection string
-		String url = "jdbc:sqlite:" + dbName;
-		Connection conn = null;
-		try {
-			conn = DriverManager.getConnection(url);
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-		return conn;
-	}*/
 	
-	public static boolean insertProduct(int prodCode, String prodName, int prodPrice, boolean isAdultOnly) {
-		String query = "INSERT INTO `Product`(`ProductCode`, `ProductName`, `ProductPrice`, `IsAdultOnly`) "
-				+ "VALUES(?,?,?,?)";
+	public static boolean insertProduct(int prodCode, String prodName, int prodPrice, boolean isAdultOnly, int prodRemain) {
+		String query = "INSERT INTO `Product`(`ProductCode`, `ProductName`, `ProductPrice`, `IsAdultOnly`, `ProductRemain`) "
+				+ "VALUES(?,?,?,?,?)";
 
 		try {
 			Connection conn = DBHelper.connect();
@@ -30,11 +18,34 @@ public class ProductHelper {
 			pstmt.setInt(3, prodPrice);
 			int val = isAdultOnly ? 1 : 0;
 			pstmt.setInt(4, val);
+			pstmt.setInt(5, prodRemain);
 			pstmt.executeUpdate();
 			DBHelper.close();
 			return true;
 		} catch (SQLException e) {
 			//System.out.println(e.getMessage());
+			DBHelper.close();
+			return false;
+		}
+	}
+	
+	public static boolean updateProduct(Product product) {
+		String query = "UPDATE `Product` SET `ProductName`=?, `ProductPrice`=?, "
+				+ "`IsAdultOnly`=?, `ProductRemain`=? WHERE `ProductCode`=?";
+		
+		try {
+			Connection conn = DBHelper.connect();
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, product.getProductName());
+			pstmt.setInt(2, product.getProductPrice());
+			pstmt.setInt(3, product.getIsAdultOnly() ? 1 : 0);
+			pstmt.setInt(4, product.getProductRemain());
+			pstmt.setInt(5, product.getProductCode());
+			pstmt.executeUpdate();
+			DBHelper.close();
+			return true;
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
 			DBHelper.close();
 			return false;
 		}
@@ -67,7 +78,8 @@ public class ProductHelper {
 			ResultSet rs = stmt.executeQuery(query);
 			
 			Product p = new Product(productCode, rs.getString("ProductName"), 
-						1, rs.getInt("ProductPrice"), (rs.getInt("IsAdultOnly") == 1));
+						1, rs.getInt("ProductPrice"), (rs.getInt("IsAdultOnly") == 1),
+						rs.getInt("ProductRemain"));
 			DBHelper.close();
 			return p;
 		} catch (SQLException e) {
@@ -91,8 +103,8 @@ public class ProductHelper {
 				tempProduct.setProductName(rs.getString("ProductName"));
 				tempProduct.setProductPrice(rs.getInt("ProductPrice"));
 				tempProduct.setIsAdultOnly(rs.getInt("IsAdultOnly") == 1);
-						
-						
+				tempProduct.setProductRemain(rs.getInt("ProductRemain"));
+
 				list.add(tempProduct);
 			}
 			DBHelper.close();
@@ -117,6 +129,21 @@ public class ProductHelper {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	public static void dropTable() {
+		String url = "jdbc:sqlite:" + DBHelper.dbName;
+
+		// SQL statement for creating a new table
+		String sql = "DROP TABLE `Product`";
+
+		try {
+			Connection conn = DriverManager.getConnection(url);
+			Statement stmt = conn.createStatement();
+			stmt.execute(sql);
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+	}
 
 	public static void createNewTable() { // SQLite connection string
 		String url = "jdbc:sqlite:" + DBHelper.dbName;
@@ -124,7 +151,7 @@ public class ProductHelper {
 		// SQL statement for creating a new table
 		String sql = "CREATE TABLE `Product` (\n" + " `ProductCode` integer UNIQUE,\n"
 				+ " `ProductName` text NOT NULL,\n" + " `ProductPrice` integer NOT NULL,\n"
-				+ " `IsAdultOnly` integer NOT NULL\n" + ");";
+				+ " `IsAdultOnly` integer NOT NULL,\n" + " `ProductRemain` integer NOT NULL\n"+ ");";
 
 		try {
 			Connection conn = DriverManager.getConnection(url);

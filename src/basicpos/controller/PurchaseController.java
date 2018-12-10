@@ -6,14 +6,29 @@ import java.util.Iterator;
 import basicpos.dao.CalcDao;
 import basicpos.model.PointHelper;
 import basicpos.model.Product;
+import basicpos.model.ProductHelper;
+import basicpos.view.PrintLineView;
 import basicpos.view.ReceiptView;
 
 public class PurchaseController extends CalcDao {
+	
+	public PurchaseController() {
+		this(Type.TYPE_PURCHASE);
+	}
+	
+	private PurchaseController(Type type) {
+		super(type);
+	}
+
+
 	private static double POINT_RATE = 0.01;
 	
 	@Override
 	protected void pay() {
 
+		if(this.cart.isEmpty()) {
+			return;
+		}
 		this.printAllProduct();
 
 		System.out.println("\n");
@@ -28,11 +43,13 @@ public class PurchaseController extends CalcDao {
 		String taxNumber = null;
 
 		while(true) {
-			
-			
 			appView.printNotice("결제 수단을 선택해 주세요.");
-			appView.printMessage("(1) 신용카드     (2) 현금     (0) 종료");
 			
+			plView = new PrintLineView();
+			plView.addView("(1) 신용카드");
+			plView.addView("(2) 현금");
+			plView.addView("(0) 종료");
+			plView.printList();
 			
 			while (true) {
 				purchaseType = appView.inputInt();
@@ -76,7 +93,14 @@ public class PurchaseController extends CalcDao {
 				appView.inputEnter();
 				
 				appView.printNotice("현금영수증 여부를 선택해 주세요.");
-				appView.printMessage("(1) 사업자 증빙용   (2) 개인용     (0) 건너뛰기");
+				
+				plView = new PrintLineView();
+				plView.addView("(1) 사업자 증빙용");
+				plView.addView("(2) 개인용");
+				plView.addView("(0) 건너뛰기");
+				plView.printList();
+				
+				//appView.printMessage("(1) 사업자 증빙용   (2) 개인용     (0) 건너뛰기");
 				int receiptType = 0;
 				boolean isComplete = false;
 				while (!isComplete) {
@@ -112,12 +136,13 @@ public class PurchaseController extends CalcDao {
 				}
 			}
 			
-			
-			
 			break;
 		}
 		
 		System.out.println("\n\n");
+		
+		//재고수량 수정
+		updateProductRemain();
 
 		this.printReceipt(purchaseType, receivedCash, discountPrice, taxNumber);
 
@@ -134,7 +159,7 @@ public class PurchaseController extends CalcDao {
 		receiptView.printLine();
 		while (ite.hasNext()) {
 			Product tempProduct = ite.next();
-			receiptView.setReceiptProduct(index, tempProduct.getProductName(), tempProduct.getProductCount(),
+			receiptView.setData(index, tempProduct.getProductName(), tempProduct.getProductCount(),
 					tempProduct.getProductPrice());
 			receiptView.printBody();
 			index++;
@@ -157,7 +182,7 @@ public class PurchaseController extends CalcDao {
 		//계산 목록 시작
 		while (ite.hasNext()) {
 			Product tempProduct = ite.next();
-			receiptView.setReceiptProduct(index, tempProduct.getProductName(), tempProduct.getProductCount(),
+			receiptView.setData(index, tempProduct.getProductName(), tempProduct.getProductCount(),
 					tempProduct.getProductPrice());
 			receiptView.printBody();
 		}
@@ -197,7 +222,14 @@ public class PurchaseController extends CalcDao {
 	
 	private int usePoint() {
 		appView.printNotice("포인트를 적립 또는 사용하시겠습니까?");
-		appView.printMessage("(1) 적립     (2) 사용     (9) 뒤로 가기     (0) 아니요");
+		
+		plView = new PrintLineView();
+		plView.addView("(1) 적립");
+		plView.addView("(2) 사용");
+		plView.addView("(9) 뒤로가기");
+		plView.addView("(0) 아니요");
+		plView.printList();
+		//appView.printMessage("(1) 적립     (2) 사용     (9) 뒤로 가기     (0) 아니요");
 		int pointType = 0;
 		while (true) {
 			pointType = appView.inputInt();

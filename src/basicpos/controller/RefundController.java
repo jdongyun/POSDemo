@@ -4,11 +4,22 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import basicpos.dao.CalcDao;
+import basicpos.dao.CalcDao.Type;
 import basicpos.model.Product;
+import basicpos.view.PrintLineView;
 import basicpos.view.ReceiptView;
 
 public class RefundController extends CalcDao {
 	
+	public RefundController() {
+		this(Type.TYPE_REFUND);
+	}
+	
+	private RefundController(Type type) {
+		super(type);
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	protected void pay() {
 		this.printAllProduct();
@@ -18,7 +29,14 @@ public class RefundController extends CalcDao {
 		while(true) {
 
 			appView.printNotice("결제 시 사용한 수단을 선택해 주세요.");
-			appView.printMessage("(1) 신용카드     (2) 현금     (0) 종료");
+			
+			plView = new PrintLineView();
+			plView.addView("(1) 신용카드");
+			plView.addView("(2) 현금");
+			plView.addView("(0) 종료");
+			plView.printList();
+			
+			//appView.printMessage("(1) 신용카드     (2) 현금     (0) 종료");
 			int purchaseType = 0;
 			
 			while (true) {
@@ -53,6 +71,8 @@ public class RefundController extends CalcDao {
 			
 			break;
 		}
+		//재고수량 수정
+		this.updateProductRemain();
 
 	}
 
@@ -73,7 +93,7 @@ public class RefundController extends CalcDao {
 		receiptView.printLine();
 		while (ite.hasNext()) {
 			Product tempProduct = ite.next();
-			receiptView.setReceiptProduct(index, tempProduct.getProductName(), tempProduct.getProductCount(),
+			receiptView.setData(index, tempProduct.getProductName(), tempProduct.getProductCount(),
 					tempProduct.getProductPrice());
 			receiptView.printBody();
 			index++;
