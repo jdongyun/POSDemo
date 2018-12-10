@@ -35,7 +35,6 @@ public class RefundController extends CalcDao {
 			plView.addView("(0) 종료");
 			plView.printList();
 			
-			//appView.printMessage("(1) 신용카드     (2) 현금     (0) 종료");
 			int purchaseType = 0;
 			
 			while (true) {
@@ -60,7 +59,7 @@ public class RefundController extends CalcDao {
 			} else if(purchaseType == 2) {
 				
 				appView.printNotice("현금 환불입니다.");
-				appView.printNotice(String.format("정산할 금액은 %,d원 입니다.", cart.getAllPrice()));
+				appView.printNotice(String.format("정산할 금액은 %,d원 입니다.", cart.getCartPrice()));
 				
 				appView.printNotice("금액을 정산하신 후 엔터 버튼을 눌러주세요.");
 				appView.inputEnter();
@@ -98,7 +97,7 @@ public class RefundController extends CalcDao {
 			index++;
 		}
 		receiptView.printLine();
-		receiptView.printReceiptPrice(this.cart.getAllPrice());
+		receiptView.printReceiptPrice(this.cart.getCartPrice());
 		receiptView.printLine();
 	}
 }

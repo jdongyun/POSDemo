@@ -1,6 +1,7 @@
 package basicpos.controller;
 
 import basicpos.dao.CalcDao;
+import basicpos.model.CouponHelper;
 import basicpos.model.ProductHelper;
 import basicpos.view.AppView;
 import basicpos.view.MainView;
@@ -15,6 +16,7 @@ public class AppController {
 	}
 	
 	public void run() {
+		//CouponHelper.createNewTable();
 		mainView.addView("1. 물품 계산");
 		mainView.addView("2. 물품 환불");
 		mainView.addView("3. 관리자 페이지");

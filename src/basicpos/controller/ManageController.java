@@ -2,12 +2,15 @@ package basicpos.controller;
 
 import java.util.Iterator;
 
+import basicpos.model.Coupon;
+import basicpos.model.CouponHelper;
 import basicpos.model.DBHelper;
 import basicpos.model.Point;
 import basicpos.model.PointHelper;
 import basicpos.model.Product;
 import basicpos.model.ProductHelper;
 import basicpos.view.AppView;
+import basicpos.view.CouponView;
 import basicpos.view.MainView;
 import basicpos.view.PointView;
 import basicpos.view.PrintLineView;
@@ -29,6 +32,9 @@ public class ManageController {
 		mainView.addView("3. 물품 추가");
 		mainView.addView("4. 물품 수정");
 		mainView.addView("5. 물품 제거");
+		mainView.addView("6. 쿠폰 정보");
+		mainView.addView("7. 쿠폰 추가");
+		mainView.addView("8. 쿠폰 제거");
 		mainView.addView("0. 뒤로 가기");
 		
 		appView.printNotice("관리자 페이지입니다.");
@@ -57,6 +63,18 @@ public class ManageController {
 			case 5: //물품 제거
 				appView.printNotice("물품을 제거합니다.");
 				this.deleteProduct();
+				break;
+			case 6: //쿠폰 정보
+				appView.printNotice("쿠폰 정보를 출력합니다.");
+				this.printCouponData();
+				break;
+			case 7: //쿠폰 추가
+				appView.printNotice("쿠폰을 추가합니다.");
+				this.insertCoupon();
+				break;
+			case 8: //쿠폰 삭제
+				appView.printNotice("쿠폰을 제거합니다.");
+				this.deleteCoupon();
 				break;
 			case 0:
 				appView.printNotice("메인 메뉴로 이동합니다.");
@@ -105,6 +123,24 @@ public class ManageController {
 		pointView.printLine();
 	}
 	
+	private void printCouponData() {
+		CouponView couponView = new CouponView();
+		Iterator<Coupon> ite = CouponHelper.getCouponDB();
+
+		couponView.printLine();
+		couponView.printHead();
+		couponView.printLine();
+		
+		while(ite.hasNext()) {
+			Coupon coupon = ite.next();
+			couponView.setBody(coupon.getCouponCode(), coupon.getProductCode(), 
+					coupon.getProductCount(), coupon.getDiscountRate(), coupon.getIsUsed());
+			couponView.printBody();
+		}
+		
+		couponView.printLine();
+	}
+	
 	private void insertProduct() {
 		int productCode = 0;
 		String productName = "";
@@ -138,8 +174,14 @@ public class ManageController {
 		appView.printNotice("추가할 물품의 재고 개수를 입력해 주세요.");
 		productRemain = appView.inputInt();
 		
+		Product product = new Product();
+		product.setProductCode(productCode);
+		product.setProductName(productName);
+		product.setProductPrice(productPrice);
+		product.setIsAdultOnly(isAdultOnly);
+		product.setProductRemain(productRemain);
 		
-		if(ProductHelper.insertProduct(productCode, productName, productPrice, isAdultOnly, productRemain)) {
+		if(ProductHelper.insertProduct(product)) {
 			appView.printNotice("물품 추가가 완료되었습니다.");
 		} else {
 			appView.printError("물품 추가 중 문제가 발생하였습니다.");
@@ -161,7 +203,6 @@ public class ManageController {
 			plView.addView("(3) 재고수량");
 			plView.addView("(0) 취소");
 			plView.printList();
-			//appView.printMessage("(1) 물품명   (2) 단가   (3) 재고수량   (0) 취소");
 			
 			int input = appView.inputInt();
 			int tempInt;
@@ -207,6 +248,61 @@ public class ManageController {
 		appView.printNotice("삭제할 물품의 코드를 입력해 주세요.");
 		int productCode = appView.inputInt();
 		if(ProductHelper.deleteProduct(productCode)) {
+			appView.printNotice("물품 제거가 완료되었습니다.");
+		} else {
+			appView.printError("물품 제거 중 문제가 발생하였습니다.");
+		}
+	}
+	
+	
+	
+
+	private void insertCoupon() {
+		int couponCode = 0;
+		int productCode = 0;
+		int productCount = 0;
+		int discountRate = 0;
+
+		appView.printNotice("추가할 쿠폰의 코드를 입력해 주세요. (물품 코드와 중복 불가)");
+		while(true) {
+			couponCode = appView.inputInt();
+			if(ProductHelper.getProduct(couponCode) != null) {
+				appView.printError("동일한 코드로 된 물품이 이미 있습니다. 다시 입력해 주세요.");
+			} else {
+				break;
+			}
+		}
+		
+		appView.printNotice("추가할 쿠폰의 물품 코드를 입력해 주세요.");
+		productCode = appView.inputInt();
+		
+		appView.printNotice("추가할 쿠폰이 적용될 물품의 개수를 입력해 주세요.");
+		productCount = appView.inputInt();
+		
+		appView.printNotice("추가할 쿠폰의 할인 비율을 입력해 주세요. (1부터 100까지의 정수, 100은 전액 할인)");
+		while(true) {
+			discountRate = appView.inputInt();
+			if(discountRate < 1 || discountRate > 100) {
+				appView.printError("할인 비율을 다시 입력해 주세요.");
+			} else {
+				break;
+			}
+		}
+		
+		Coupon coupon = new Coupon(couponCode, productCode, productCount, discountRate, false);
+		
+		if(CouponHelper.insertCoupon(coupon)) {
+			appView.printNotice("쿠폰 추가가 완료되었습니다.");
+		} else {
+			appView.printError("쿠폰 추가 중 문제가 발생하였습니다.");
+		}
+	}
+	
+	private void deleteCoupon() {
+		this.printCouponData();
+		appView.printNotice("삭제할 쿠폰의 코드를 입력해 주세요.");
+		int couponCode = appView.inputInt();
+		if(CouponHelper.deleteCoupon(couponCode)) {
 			appView.printNotice("물품 제거가 완료되었습니다.");
 		} else {
 			appView.printError("물품 제거 중 문제가 발생하였습니다.");

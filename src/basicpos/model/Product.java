@@ -29,7 +29,7 @@ public class Product {
 		this(0, "", 1, 0, false, 1);
 	}
 
-	public void setProductNumber(int prodCode) {
+	public void setProductCode(int prodCode) {
 		this.productCode = prodCode;
 	}
 	

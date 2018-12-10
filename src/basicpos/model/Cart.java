@@ -7,10 +7,12 @@ import java.util.Iterator;
 public class Cart {
 	private Map<Integer, Product> cartMap; //key는 물건의 번호, value는 물건 객체
 	private int cartPrice;
+	private int discountPrice;
 	
 	public Cart() {
 		this.cartMap = new HashMap<Integer, Product>();
 		this.cartPrice = 0;
+		this.discountPrice = 0;
 	}
 	/*
 	 * 반환값이 참이면 물건을 새로 추가한 것임.
@@ -43,8 +45,20 @@ public class Cart {
 		}
 	}
 	
-	public int getAllPrice() {
+	public int getCartPrice() {
 		return this.cartPrice;
+	}
+	
+	public void setDiscountPrice(int discountPrice) {
+		this.discountPrice = discountPrice;
+	}
+	
+	public int getDiscountPrice() {
+		return this.discountPrice;
+	}
+	
+	public int getFinalPrice() {
+		return this.cartPrice - this.discountPrice;
 	}
 	
 	public Collection<Product> getAllProduct() {

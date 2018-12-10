@@ -1,6 +1,6 @@
 package basicpos.view;
 
-public class PointView {
+public class PointView implements PrintView {
 	private final static char WALL = '-';
 	private int userCode;
 	private int userPoint;

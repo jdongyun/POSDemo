@@ -6,19 +6,18 @@ import java.util.List;
 
 public class ProductHelper {
 	
-	public static boolean insertProduct(int prodCode, String prodName, int prodPrice, boolean isAdultOnly, int prodRemain) {
+	public static boolean insertProduct(Product product) {
 		String query = "INSERT INTO `Product`(`ProductCode`, `ProductName`, `ProductPrice`, `IsAdultOnly`, `ProductRemain`) "
 				+ "VALUES(?,?,?,?,?)";
 
 		try {
 			Connection conn = DBHelper.connect();
 			PreparedStatement pstmt = conn.prepareStatement(query);
-			pstmt.setInt(1, prodCode);
-			pstmt.setString(2, prodName);
-			pstmt.setInt(3, prodPrice);
-			int val = isAdultOnly ? 1 : 0;
-			pstmt.setInt(4, val);
-			pstmt.setInt(5, prodRemain);
+			pstmt.setInt(1, product.getProductCode());
+			pstmt.setString(2, product.getProductName());
+			pstmt.setInt(3, product.getProductPrice());
+			pstmt.setInt(4, product.getIsAdultOnly() ? 1 : 0);
+			pstmt.setInt(5, product.getProductRemain());
 			pstmt.executeUpdate();
 			DBHelper.close();
 			return true;
@@ -99,7 +98,7 @@ public class ProductHelper {
 			// loop through the result set
 			while (rs.next()) {
 				Product tempProduct = new Product();
-				tempProduct.setProductNumber(rs.getInt("ProductCode"));
+				tempProduct.setProductCode(rs.getInt("ProductCode"));
 				tempProduct.setProductName(rs.getString("ProductName"));
 				tempProduct.setProductPrice(rs.getInt("ProductPrice"));
 				tempProduct.setIsAdultOnly(rs.getInt("IsAdultOnly") == 1);

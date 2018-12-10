@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import basicpos.Enums;
 import basicpos.model.Cart;
+import basicpos.model.Coupon;
+import basicpos.model.CouponHelper;
 import basicpos.model.Product;
 import basicpos.model.ProductHelper;
 import basicpos.view.AppView;
@@ -16,7 +18,7 @@ public abstract class CalcDao {
 	protected PrintLineView plView;
 	
 	private Enums CALC_TYPE;
-	private final static int PRODUCT_MIN_REMAIN = 5;
+	private final static int PRODUCT_MIN_REMAIN = 10;
 	private final static int PRODUCT_ORDER_QUANTITY = 30;
 	
 	public CalcDao(Enums type) {
@@ -43,37 +45,59 @@ public abstract class CalcDao {
 	private void addCart() {
 		while (true) {
 			Product product;
-
+			Coupon coupon;
 			appView.printNotice("물건의 코드 번호를 입력해 주세요. (종료는 0 입력)");
 
 			int input = appView.inputInt();
+			int inputCount = 0;
 
 			if (input == 0)
 				return;
+			
+			coupon = CouponHelper.getCoupon(input);
+			
+			if(coupon != null) {
+				if(coupon.getIsUsed()) {
+					appView.printError("이미 사용된 쿠폰입니다.");
+					continue;
+				}
+				product = ProductHelper.getProduct(coupon.getProductCode());
+				product.setProductCount(coupon.getProductCount());
+				inputCount = coupon.getProductCount();
+				
+				int allPrice = product.getProductPrice() * product.getProductCount();
+				int discountPrice = (int)(allPrice * (coupon.getDiscountRate() / 100.0));
+				cart.setDiscountPrice(cart.getDiscountPrice() + discountPrice);
+				
+				coupon.setIsUsed(true);
+				CouponHelper.updateCoupon(coupon);
+				
+			} else {
+				product = ProductHelper.getProduct(input);
+				
+				if (product == null) {
+					appView.printError("올바른 코드 번호가 아닙니다.");
+					continue;
+				}
 
-			product = ProductHelper.getProduct(input);
+				appView.printNotice("물건의 개수를 입력해 주세요. (종료는 0 입력)");
 
-			if (product == null) {
-				appView.printError("올바른 코드 번호가 아닙니다.");
+				inputCount = appView.inputInt();
+
+				if (inputCount == 0) {
+					product = null;
+					appView.printNotice("물건을 추가하지 않았습니다.");
+					break;
+				}
+			}
+
+			if(product.getProductRemain() < inputCount) {
+				product = null;
+				appView.printNotice("재고수량보다 물건을 많이 구매할 수 없습니다.");
 				continue;
 			}
 
-			appView.printNotice("물건의 개수를 입력해 주세요. (종료는 0 입력)");
-
-			int count = appView.inputInt();
-
-			if (count == 0) {
-				product = null;
-				appView.printNotice("물건을 추가하지 않았습니다.");
-				break;
-			}
-			if(product.getProductRemain() < count) {
-				product = null;
-				appView.printNotice("재고수량보다 많이 물건을 구매할 수 없습니다.");
-				continue;
-			}
-
-			product.setProductCount(count);
+			product.setProductCount(inputCount);
 
 			if (product != null)
 				this.cart.addProduct(product);
