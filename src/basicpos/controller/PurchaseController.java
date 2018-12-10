@@ -3,6 +3,7 @@ package basicpos.controller;
 import java.util.Collection;
 import java.util.Iterator;
 
+import basicpos.Enums;
 import basicpos.dao.CalcDao;
 import basicpos.model.PointHelper;
 import basicpos.model.Product;
@@ -13,10 +14,10 @@ import basicpos.view.ReceiptView;
 public class PurchaseController extends CalcDao {
 	
 	public PurchaseController() {
-		this(Type.TYPE_PURCHASE);
+		this(Enums.TYPE_PURCHASE);
 	}
 	
-	private PurchaseController(Type type) {
+	private PurchaseController(Enums type) {
 		super(type);
 	}
 
@@ -141,11 +142,7 @@ public class PurchaseController extends CalcDao {
 		
 		System.out.println("\n\n");
 		
-		//재고수량 수정
-		updateProductRemain();
-
 		this.printReceipt(purchaseType, receivedCash, discountPrice, taxNumber);
-
 	}
 
 	protected void printAllProduct() {
@@ -193,9 +190,9 @@ public class PurchaseController extends CalcDao {
 		receiptView.printDiscountPrice(discountPrice);
 		receiptView.printReceiptPrice(this.cart.getAllPrice() - discountPrice);
 		if (purchaseType == 1) {
-			receiptView.printPurchageType(ReceiptView.PurchaseType.PURCHASE_CARD);
+			receiptView.printPurchageType(Enums.PURCHASE_CARD);
 		} else if (purchaseType == 2) {
-			receiptView.printPurchageType(ReceiptView.PurchaseType.PURCHASE_CASH);
+			receiptView.printPurchageType(Enums.PURCHASE_CASH);
 		}
 		//판매액 및 결제방식 끝
 		

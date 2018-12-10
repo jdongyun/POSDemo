@@ -1,6 +1,8 @@
 package basicpos.view;
 import java.io.UnsupportedEncodingException;
 
+import basicpos.Enums;
+
 public class ReceiptView implements PrintView {
 	protected final static char WALL = '-';
 	protected int PRINT_COUNT = 50;
@@ -10,11 +12,6 @@ public class ReceiptView implements PrintView {
 	protected int prodPrice;
 	
 	private int index;
-	
-	public static enum PurchaseType {
-		PURCHASE_CARD,
-		PURCHASE_CASH
-	}
 	
 	public ReceiptView() {
 		
@@ -74,36 +71,6 @@ public class ReceiptView implements PrintView {
 		this.prodPrice = prodPrice;
 	}
 	
-	
-	
-	
-	
-	/*
-	
-	public void printReceiptProduct(int index, String prodName, int prodCount, int prodPrice) {
-
-		System.out.printf("  %2d  ", index);
-		
-		System.out.print(prodName);
-		for(int i = 0; i < (20 - getLength(prodName)); i++)
-			System.out.print(" ");
-			
-		System.out.printf("  %2d %,9d %,9d\n", prodCount, prodPrice, (prodPrice * prodCount));
-		
-	}
-	
-	public void printReceiptProduct(int index, String prodName, int prodPrice) {
-
-		System.out.printf("  %6d  ", index);
-		
-		System.out.print(prodName);
-		for(int i = 0; i < (20 - getLength(prodName)); i++)
-			System.out.print(" ");
-		
-		System.out.printf("%,9d\n", prodPrice);
-		
-	}*/
-	
 	public void printDiscountPrice(int discountPrice) {
 		System.out.printf("할 인 액 %,41d\n", discountPrice);
 	}
@@ -113,7 +80,7 @@ public class ReceiptView implements PrintView {
 		System.out.printf("결 제 액 %,41d\n", sumPrice);
 	}
 	
-	public void printPurchageType(PurchaseType pType) {
+	public void printPurchageType(Enums pType) {
 		String typeString = "";
 		switch(pType) {
 		case PURCHASE_CARD:
@@ -122,7 +89,8 @@ public class ReceiptView implements PrintView {
 		case PURCHASE_CASH:
 			typeString = "현금";
 			break;
-			
+		default:
+			break;
 		}
 		System.out.print("결제방식");
 		for(int i = 0; i < (42 - getLength(typeString)); i++)

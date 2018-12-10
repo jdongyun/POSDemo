@@ -3,8 +3,8 @@ package basicpos.controller;
 import java.util.Collection;
 import java.util.Iterator;
 
+import basicpos.Enums;
 import basicpos.dao.CalcDao;
-import basicpos.dao.CalcDao.Type;
 import basicpos.model.Product;
 import basicpos.view.PrintLineView;
 import basicpos.view.ReceiptView;
@@ -12,14 +12,12 @@ import basicpos.view.ReceiptView;
 public class RefundController extends CalcDao {
 	
 	public RefundController() {
-		this(Type.TYPE_REFUND);
+		this(Enums.TYPE_PURCHASE);
 	}
 	
-	private RefundController(Type type) {
+	private RefundController(Enums type) {
 		super(type);
-		// TODO Auto-generated constructor stub
 	}
-
 	@Override
 	protected void pay() {
 		this.printAllProduct();

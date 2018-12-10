@@ -4,13 +4,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import basicpos.Enums;
+
 public class MainView {
 	private final static char WALL = '*';
-	private static enum Print {
-		MARGIN_ONE,
-		MARGIN_TWO
-	}
-	
+
 	protected List<String> list;
 	
 	public MainView() {
@@ -43,10 +41,10 @@ public class MainView {
 		System.out.println();
 	}
 	
-	private void printMargin(Print e) {
+	private void printMargin(Enums e) {
 		printWall();
 		for(int i = 0; i < 48; i++) {
-			if(i == 23 && e == Print.MARGIN_TWO) {
+			if(i == 23 && e == Enums.MARGIN_TWO) {
 				printWall();
 				continue;
 			}
@@ -99,18 +97,18 @@ public class MainView {
 			String str1 = list.get(ite);
 			String str2 = list.get(ite + 1);
 			
-			printMargin(Print.MARGIN_TWO);
+			printMargin(Enums.MARGIN_TWO);
 			printData(str1, str2);
-			printMargin(Print.MARGIN_TWO);
+			printMargin(Enums.MARGIN_TWO);
 			printWallLine();
 			ite = ite + 2;
 		}
 		
 		if(size % 2 == 1) {
 			String str = list.get(ite);
-			printMargin(Print.MARGIN_ONE);
+			printMargin(Enums.MARGIN_ONE);
 			printData(str);
-			printMargin(Print.MARGIN_ONE);
+			printMargin(Enums.MARGIN_ONE);
 			printWallLine();
 		}
 

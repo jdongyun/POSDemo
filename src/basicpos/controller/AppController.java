@@ -15,8 +15,6 @@ public class AppController {
 	}
 	
 	public void run() {
-		
-		
 		mainView.addView("1. 물품 계산");
 		mainView.addView("2. 물품 환불");
 		mainView.addView("3. 관리자 페이지");

@@ -3,6 +3,7 @@ package basicpos.dao;
 import java.util.Collection;
 import java.util.Iterator;
 
+import basicpos.Enums;
 import basicpos.model.Cart;
 import basicpos.model.Product;
 import basicpos.model.ProductHelper;
@@ -14,20 +15,14 @@ public abstract class CalcDao {
 	protected Cart cart;
 	protected PrintLineView plView;
 	
-	private Type TYPE;
+	private Enums CALC_TYPE;
 	private final static int PRODUCT_MIN_REMAIN = 5;
 	private final static int PRODUCT_ORDER_QUANTITY = 30;
 	
-	public enum Type {
-		TYPE_PURCHASE,
-		TYPE_REFUND
-	}
-	
-	
-	public CalcDao(Type type) {
+	public CalcDao(Enums type) {
 		this.appView = new AppView();
 		this.cart = new Cart();
-		this.TYPE = type;
+		this.CALC_TYPE = type;
 	}
 	
 	public void run() {
@@ -40,6 +35,8 @@ public abstract class CalcDao {
 		this.pay();
 		appView.printMessage("\n\n");
 		
+		//재고수량 수정
+		updateProductRemain();
 		
 	}
 
@@ -94,7 +91,7 @@ public abstract class CalcDao {
 		
 		while (ite.hasNext()) {
 			Product tempProduct = ite.next();
-			if(TYPE == Type.TYPE_PURCHASE) { //결제
+			if(CALC_TYPE == Enums.TYPE_PURCHASE) { //결제
 				tempProduct.setProductRemain(tempProduct.getProductRemain() - tempProduct.getProductCount());
 			} else { //환불
 				tempProduct.setProductRemain(tempProduct.getProductRemain() + tempProduct.getProductCount());
