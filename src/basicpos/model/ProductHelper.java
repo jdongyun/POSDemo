@@ -113,36 +113,6 @@ public class ProductHelper {
 			return null;
 		}
 	}
-	
-	public static void createNewDatabase() {
-		String url = "jdbc:sqlite:" + DBHelper.dbName;
-		try {
-			Connection conn = DriverManager.getConnection(url);
-			if (conn != null) {
-				DatabaseMetaData meta = conn.getMetaData();
-				System.out.println("The driver name is " + meta.getDriverName());
-				System.out.println("A new database has been created.");
-			}
-
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	public static void dropTable() {
-		String url = "jdbc:sqlite:" + DBHelper.dbName;
-
-		// SQL statement for creating a new table
-		String sql = "DROP TABLE `Product`";
-
-		try {
-			Connection conn = DriverManager.getConnection(url);
-			Statement stmt = conn.createStatement();
-			stmt.execute(sql);
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-	}
 
 	public static void createNewTable() { // SQLite connection string
 		String url = "jdbc:sqlite:" + DBHelper.dbName;

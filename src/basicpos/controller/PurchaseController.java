@@ -5,6 +5,9 @@ import java.util.Iterator;
 
 import basicpos.Enums;
 import basicpos.dao.CalcDao;
+import basicpos.model.Coupon;
+import basicpos.model.CouponHelper;
+import basicpos.model.Point;
 import basicpos.model.PointHelper;
 import basicpos.model.Product;
 import basicpos.model.ProductHelper;
@@ -26,25 +29,23 @@ public class PurchaseController extends CalcDao {
 	@Override
 	protected void pay() {
 
-		if(this.cart.isEmpty()) {
+		if(this.cart.isEmpty()) { //카트에 물품이 없으면 계산할 필요가 없으므로 return
 			return;
 		}
-		this.printAllProduct();
+		this.printAllProduct(); //결제 전 카트에 들어있는 모든 물품 출력
 
-		System.out.println("\n");
+		appView.printMessage("");
 
 		if (cart.hasAdultProduct()) {
 			appView.printNotice("나이를 확인해야 하는 물품이 있습니다.\n");
 		}
 		
-		int purchaseType = 0;
+		int purchaseType = 0; //결제 수단 저장
 		int receivedCash = this.cart.getFinalPrice(); // 카드결제일 때의 기본값은 결제금액.
-		String taxNumber = null;
+		String taxNumber = null; //현금영수증 번호 입력. 기본값은 null
 
 		while(true) {
-			
-			if(this.cart.getFinalPrice() == 0) break;
-			
+			if(this.cart.getFinalPrice() == 0) break; //쿠폰으로만 계산할 경우, 결제할 금액이 0원이므로 계산하지 않아도 됨
 			
 			appView.printNotice("결제 수단을 선택해 주세요.");
 			
@@ -56,7 +57,7 @@ public class PurchaseController extends CalcDao {
 			
 			while (true) {
 				purchaseType = appView.inputInt();
-				if (purchaseType == 1 || purchaseType == 2|| purchaseType == 3) {
+				if (purchaseType == 1 || purchaseType == 2) {
 					break;
 				}
 				if (purchaseType == 0) {
@@ -66,7 +67,6 @@ public class PurchaseController extends CalcDao {
 			}
 			
 			if(purchaseType == 1) {
-				
 				appView.printNotice("신용카드 결제입니다.");
 				
 				int ret = usePoint();
@@ -82,20 +82,18 @@ public class PurchaseController extends CalcDao {
 			} else if (purchaseType == 2) {
 				appView.printNotice("현금 결제입니다.");
 
-				//if(this.cart.getFinalPrice() > 0) {
-					int ret = usePoint();
-					if(ret == -1) //usePoint에서 -1이 입력되면 뒤로가기로 체크
-						continue;
-					
-					appView.printNotice(String.format("판매액은 %,d원입니다. 받으신 금액을 입력해 주세요.\n", cart.getFinalPrice()));
-					receivedCash = appView.inputInt();
-					
-					appView.printNotice(String.format("받으신 금액은 %,d원이며, 거스름돈은 %,d원입니다.\n", receivedCash,
-							(receivedCash - cart.getFinalPrice())));
-					
-					appView.printNotice("금액을 정산하신 후 엔터 버튼을 눌러주세요.");
-					appView.inputEnter();
-				//}
+				int ret = usePoint();
+				if (ret == -1) // usePoint에서 -1이 입력되면 뒤로가기로 체크
+					continue;
+
+				appView.printNotice(String.format("판매액은 %,d원입니다. 받으신 금액을 입력해 주세요.\n", cart.getFinalPrice()));
+				receivedCash = appView.inputInt();
+
+				appView.printNotice(String.format("받으신 금액은 %,d원이며, 거스름돈은 %,d원입니다.\n", receivedCash,
+						(receivedCash - cart.getFinalPrice())));
+
+				appView.printNotice("금액을 정산하신 후 엔터 버튼을 눌러주세요.");
+				appView.inputEnter();
 				
 				appView.printNotice("현금영수증 여부를 선택해 주세요.");
 				
@@ -112,6 +110,7 @@ public class PurchaseController extends CalcDao {
 					
 					switch(receiptType) {
 					case 1:
+						//사업자 번호 입력 받음(10자리)
 						appView.printNotice("사업자 번호를 입력하세요.");
 						taxNumber = appView.inputString();
 						while (taxNumber.length() != 10) {
@@ -134,9 +133,8 @@ public class PurchaseController extends CalcDao {
 						isComplete = true;
 						break;
 					default:
-						//Nothing. goto while loop
+						//아무 동작 하지 않음
 					}
-					
 				}
 			}
 			
@@ -146,6 +144,74 @@ public class PurchaseController extends CalcDao {
 		System.out.println("\n\n");
 		
 		this.printReceipt(purchaseType, receivedCash, taxNumber);
+	}
+	
+	@Override
+	protected void addCart() {
+		while (true) {
+			Product product;
+			Coupon coupon;
+			appView.printNotice("물품이나 쿠폰의 코드 번호를 입력해 주세요. (종료는 0 입력)");
+
+			int input = appView.inputInt();
+			int inputCount = 0;
+
+			if (input == 0)
+				return;
+			
+			coupon = CouponHelper.getCoupon(input); //우선 입력된 코드를 쿠폰 데이터베이스에서 검색
+			
+			if(coupon != null) { //쿠폰일 때
+				if(coupon.getIsUsed()) {
+					appView.printError("이미 사용된 쿠폰입니다.");
+					continue;
+				}
+				product = ProductHelper.getProduct(coupon.getProductCode());
+				product.setProductCount(coupon.getProductCount());
+				inputCount = coupon.getProductCount();
+				
+				int allPrice = product.getProductPrice() * product.getProductCount();
+				int discountPrice = (int)(allPrice * (coupon.getDiscountRate() / 100.0));
+				cart.setDiscountPrice(cart.getDiscountPrice() + discountPrice);
+				
+				coupon.setIsUsed(true);
+				CouponHelper.updateCoupon(coupon);
+				
+			} else { //쿠폰의 번호가 아니면 물품 번호에서 검색함
+				product = ProductHelper.getProduct(input);
+				
+				if (product == null) { //물품 코드도 아니므로
+					appView.printError("올바른 코드 번호가 아닙니다.");
+					continue;
+				}
+
+				appView.printNotice("물품의 개수를 입력해 주세요. (종료는 0 입력)");
+
+				inputCount = appView.inputInt();
+
+				if (inputCount == 0) {
+					product = null;
+					appView.printNotice("물품을 추가하지 않았습니다.");
+					break;
+				}
+			}
+
+			if(product.getProductRemain() < inputCount) {
+				product = null;
+				appView.printNotice("재고수량보다 물품을 많이 구매할 수 없습니다.");
+				continue;
+			}
+
+			product.setProductCount(inputCount); //product 객체에 카트에 담은 물품의 개수 추가
+
+			if (product != null)
+				this.cart.addProduct(product);
+			
+			appView.printMessage("\n\n\n");
+			
+			this.printAllProduct();
+			System.out.println();
+		}
 	}
 
 	protected void printAllProduct() {
@@ -229,7 +295,7 @@ public class PurchaseController extends CalcDao {
 		plView.addView("(9) 뒤로가기");
 		plView.addView("(0) 아니요");
 		plView.printList();
-		//appView.printMessage("(1) 적립     (2) 사용     (9) 뒤로 가기     (0) 아니요");
+
 		int pointType = 0;
 		while (true) {
 			pointType = appView.inputInt();
@@ -239,45 +305,47 @@ public class PurchaseController extends CalcDao {
 			if(pointType == 9) return -1;
 			appView.printError("올바른 번호가 아닙니다.");
 		}
+		
 		if(pointType == 1) {
 			appView.printNotice("포인트를 적립합니다.");
 			int pointCardNumber = 0;
-			Integer userPoint;
+			Point point;
 			while(true) {
 				appView.printNotice("사용자의 포인트 카드 번호를 입력해 주세요. (뒤로 가기는 0 입력)");
 				pointCardNumber = appView.inputInt();
 				if(pointCardNumber == 0) return -1;
-				userPoint = PointHelper.getPoint(pointCardNumber);
-				if(userPoint == null) {
+				point = PointHelper.getPoint(pointCardNumber); //PointHelper에서 Point 객체를 불러옴
+				if(point == null) {
 					appView.printError("해당하는 포인트 카드 번호가 없습니다.");
 					continue;
 				}
 				break;
 			}
 			int addPoint = (int)(((double) this.cart.getCartPrice()) * POINT_RATE);
-			PointHelper.setPoint(pointCardNumber, userPoint + addPoint);
+			point.setUserPoint(point.getUserPoint() + addPoint);
+			PointHelper.updatePoint(point);
 			appView.printNotice(String.format("%,d 포인트가 적립되었습니다.", addPoint));
 		} else if(pointType == 2) {
 			appView.printNotice("포인트를 사용합니다.");
 			int pointCardNumber = 0;
-			Integer userPoint;
+			Point point;
 			while(true) {
 				appView.printNotice("사용자의 포인트 카드 번호를 입력해 주세요. (뒤로 가기는 0 입력)");
 				pointCardNumber = appView.inputInt();
 				if(pointCardNumber == 0) return -1;
-				userPoint = PointHelper.getPoint(pointCardNumber);
-				if(userPoint == null) {
+				point = PointHelper.getPoint(pointCardNumber);
+				if(point == null) {
 					appView.printError("해당하는 포인트 카드 번호가 없습니다.");
 					continue;
 				}
 				break;
 			}
 			
-			appView.printNotice(String.format("포인트 잔액은 %,d원입니다. 사용할 포인트를 입력해 주세요.", userPoint));
+			appView.printNotice(String.format("포인트 잔액은 %,d원입니다. 사용할 포인트를 입력해 주세요.", point.getUserPoint()));
 			int usePoint = 0;
 			while(true) {
 				usePoint = appView.inputInt();
-				if(usePoint > userPoint) {
+				if(usePoint > point.getUserPoint()) {
 					appView.printNotice("사용할 포인트가 부족합니다.");
 					continue;
 				} else if(usePoint > this.cart.getFinalPrice()) {
@@ -286,7 +354,8 @@ public class PurchaseController extends CalcDao {
 				}
 				break;
 			}
-			PointHelper.setPoint(pointCardNumber, userPoint - usePoint);
+			point.setUserPoint(point.getUserPoint() - usePoint);
+			PointHelper.updatePoint(point);
 			this.cart.setDiscountPrice(this.cart.getDiscountPrice() + usePoint);
 			appView.printNotice(String.format("%,d원이 할인되었습니다.", usePoint));
 			return 0;

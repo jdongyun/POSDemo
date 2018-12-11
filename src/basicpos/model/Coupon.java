@@ -1,10 +1,5 @@
 package basicpos.model;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 public class Coupon {
 	private int couponCode;
 	private int productCode;
@@ -43,10 +38,4 @@ public class Coupon {
 	public void setIsUsed(boolean isUsed) {
 		this.isUsed = isUsed;
 	}
-	
-	/*
-	public String toString() {
-		return String.format("%16d     %16d   %2d   %3d   %d", 
-				couponCode, productCode, productCount, discountRate, isUsed ? 1 : 0);
-	}*/
 }

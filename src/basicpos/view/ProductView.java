@@ -22,7 +22,8 @@ public class ProductView extends ReceiptView {
 			System.out.printf("%,9d", this.prodPrice);
 			System.out.printf("  %,8d\n", this.prodRemain);
 	}
-	
+	 
+	//데이터를 printBody에서 출력하기 위해 미리 데이터를 설정하는 메소드
 	public void setData(int prodCode, String prodName, int prodPrice, int prodRemain) {
 		this.prodCode = prodCode;
 		this.prodName = prodName;

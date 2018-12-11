@@ -21,6 +21,9 @@ public class RefundController extends CalcDao {
 	
 	@Override
 	protected void pay() {
+		if(this.cart.isEmpty()) {
+			return;
+		}
 		this.printAllProduct();
 		
 		System.out.println("\n");
@@ -48,7 +51,7 @@ public class RefundController extends CalcDao {
 				appView.printError("올바른 번호가 아닙니다.");
 			}
 			
-			if(purchaseType == 1) { //카드 번호 입력
+			if(purchaseType == 1) { //신용카드 환불
 				
 				appView.printNotice("신용카드 환불입니다.");
 				appView.printNotice("신용카드 번호를 입력해 주세요. (뒤로 가기는 0 입력)");
@@ -56,7 +59,7 @@ public class RefundController extends CalcDao {
 				if(cardNumber.equals("0")) continue;
 				appView.printNotice("환불이 완료되었습니다.");
 				
-			} else if(purchaseType == 2) {
+			} else if(purchaseType == 2) { //현금 환불
 				
 				appView.printNotice("현금 환불입니다.");
 				appView.printNotice(String.format("정산할 금액은 %,d원 입니다.", cart.getCartPrice()));
@@ -81,8 +84,8 @@ public class RefundController extends CalcDao {
 	
 	@Override
 	protected void printAllProduct() {
-		Collection<Product> products = this.cart.getAllProduct();
-		Iterator<Product> ite = products.iterator();
+		Collection<Product> products = this.cart.getAllProduct(); //카트에 담긴 물품에 대한 Collection
+		Iterator<Product> ite = products.iterator(); //위의 Collection의 Iterator
 		int index = 1;
 		ReceiptView receiptView = new ReceiptView();
 
@@ -91,6 +94,8 @@ public class RefundController extends CalcDao {
 		receiptView.printLine();
 		while (ite.hasNext()) {
 			Product tempProduct = ite.next();
+			
+			//ReceiptView에서 출력할 데이터를 설정함
 			receiptView.setData(index, tempProduct.getProductName(), tempProduct.getProductCount(),
 					tempProduct.getProductPrice());
 			receiptView.printBody();

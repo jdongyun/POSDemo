@@ -8,17 +8,26 @@ public class PointHelper {
 	/*
 	 * 포인트 적립 및 포인트 사용
 	 */
-	public static boolean setPoint(int userCode, int userPoint) {
-		
+	public static boolean insertPoint(Point point) {
 		String query = "INSERT INTO `Point`(`UserCode`, `UserPoint`) "
-					+ "VALUES("+ userCode +"," + userPoint +")";
-		
-		Integer isValidUser = getPoint(userCode);
-		
-		if(isValidUser != null) {
-			query = "UPDATE `Point` SET "
-					+ "`UserPoint`="+ userPoint + " WHERE UserCode=" + userCode;
-		}
+				+ "VALUES("+ point.getUserCode() +"," + point.getUserPoint() +")";
+	
+	try  {
+		Connection conn = DBHelper.connect();
+        PreparedStatement pstmt = conn.prepareStatement(query);
+        pstmt.executeUpdate();
+        DBHelper.close();
+        return true;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+	}
+	
+	public static boolean updatePoint(Point point) {
+
+		String query = "UPDATE `Point` SET "
+					+ "`UserPoint`="+ point.getUserPoint() + " WHERE UserCode=" + point.getUserCode();
 		
 		try  {
 			Connection conn = DBHelper.connect();
@@ -32,7 +41,7 @@ public class PointHelper {
         }
 	}
 	
-	public static Integer getPoint(int userCode) {
+	public static Point getPoint(int userCode) {
 		String query = "SELECT * FROM Point where UserCode=" + userCode;
 
 		try {
@@ -45,7 +54,7 @@ public class PointHelper {
 			}
 			int userPoint = rs.getInt("UserPoint");
 			DBHelper.close();
-			return userPoint;
+			return new Point(userCode, userPoint);
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 			return null;
@@ -61,7 +70,6 @@ public class PointHelper {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			
-			// loop through the result set
 			while (rs.next()) {
 				Point tempPoint = new Point(rs.getInt("UserCode"),
 											rs.getInt("UserPoint"));
@@ -72,21 +80,6 @@ public class PointHelper {
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 			return null;
-		}
-	}
-
-	public static void createNewDatabase() {
-		String url = "jdbc:sqlite:" + DBHelper.dbName;
-		try {
-			Connection conn = DriverManager.getConnection(url);
-			if (conn != null) {
-				DatabaseMetaData meta = conn.getMetaData();
-				System.out.println("The driver name is " + meta.getDriverName());
-				System.out.println("A new database has been created.");
-			}
-
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
 		}
 	}
 

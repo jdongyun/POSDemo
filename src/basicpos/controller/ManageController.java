@@ -1,5 +1,6 @@
 package basicpos.controller;
 
+import java.io.File;
 import java.util.Iterator;
 
 import basicpos.model.Coupon;
@@ -27,15 +28,23 @@ public class ManageController {
 	}
 	
 	public void run() {
+		//관리자 페이지에서의 리스트
 		mainView.addView("1. 물품 목록");
-		mainView.addView("2. 고객 포인트 정보");
-		mainView.addView("3. 물품 추가");
-		mainView.addView("4. 물품 수정");
-		mainView.addView("5. 물품 제거");
-		mainView.addView("6. 쿠폰 정보");
-		mainView.addView("7. 쿠폰 추가");
-		mainView.addView("8. 쿠폰 제거");
+		mainView.addView("2. 물품 추가");
+		mainView.addView("3. 물품 수정");
+		mainView.addView("4. 물품 제거");
+		
+		mainView.addView("5. 포인트 정보");
+		mainView.addView("6. 포인트 정보 수정");
+		
+		mainView.addView("7. 쿠폰 정보");
+		mainView.addView("8. 쿠폰 추가");
+		mainView.addView("9. 쿠폰 제거");
+		
+		mainView.addView("10. DB 초기화");
+		
 		mainView.addView("0. 뒤로 가기");
+		
 		
 		appView.printNotice("관리자 페이지입니다.");
 		
@@ -48,33 +57,53 @@ public class ManageController {
 				appView.printNotice("물품 목록을 출력합니다.");
 				this.printProduct();
 				break;
-			case 2:
-				appView.printNotice("고객들의 포인트 정보를 출력합니다.");
-				this.printPointData();
-				break;
-			case 3: //물품 추가
+			case 2: //물품 추가
 				appView.printNotice("물품을 추가합니다.");
 				this.insertProduct();
 				break;
-			case 4: //물품 수정
+			case 3: //물품 수정
 				appView.printNotice("물품을 수정합니다.");
 				this.updateProduct();
 				break;
-			case 5: //물품 제거
+			case 4: //물품 제거
 				appView.printNotice("물품을 제거합니다.");
 				this.deleteProduct();
 				break;
-			case 6: //쿠폰 정보
+			case 5: //포인트 정보 출력
+				appView.printNotice("고객들의 포인트 정보를 출력합니다.");
+				this.printPointData();
+				break;
+			case 6: //포인트 정보 수정
+				this.updatePoint();
+				break;
+			case 7: //쿠폰 정보
 				appView.printNotice("쿠폰 정보를 출력합니다.");
 				this.printCouponData();
 				break;
-			case 7: //쿠폰 추가
+			case 8: //쿠폰 추가
 				appView.printNotice("쿠폰을 추가합니다.");
 				this.insertCoupon();
 				break;
-			case 8: //쿠폰 삭제
+			case 9: //쿠폰 삭제
 				appView.printNotice("쿠폰을 제거합니다.");
 				this.deleteCoupon();
+				break;
+			case 10: //데이터베이스 초기화
+				appView.printNotice("데이터베이스를 모두 초기화합니다.");
+				appView.printNotice("동의는 y를, 거부는 다른 키를 입력해 주세요.");
+				String inputString = appView.inputString();
+				if(inputString.equals("y")) {
+					File dbFile = new File(DBHelper.dbName);
+					if(dbFile.exists() && dbFile.delete()) {
+						DBHelper.createNewDatabase();
+						ProductHelper.createNewTable();
+						CouponHelper.createNewTable();
+						PointHelper.createNewTable();
+						appView.printNotice("데이터베이스 초기화가 완료되었습니다.");
+					} else {
+						appView.printError("데이터베이스 초기화 중 문제가 발생하였습니다.");
+					}
+				}
 				break;
 			case 0:
 				appView.printNotice("메인 메뉴로 이동합니다.");
@@ -85,6 +114,7 @@ public class ManageController {
 		}
 	}
 	
+	//물품 목록 출력
 	private void printProduct() {
 		ProductView productView = new ProductView();
 		Iterator<Product> ite = ProductHelper.getProductList();
@@ -106,6 +136,7 @@ public class ManageController {
 		appView.printMessage("");
 	}
 	
+	//고객들의 포인트 정보 출력
 	private void printPointData() {
 		PointView pointView = new PointView();
 		Iterator<Point> ite = PointHelper.getPointDB();
@@ -123,6 +154,35 @@ public class ManageController {
 		pointView.printLine();
 	}
 	
+	//포인트 정보 업데이트
+	private void updatePoint() {
+		this.printPointData();
+		appView.printNotice("수정할 고객 포인트 번호를 입력해 주세요.");
+		int input = appView.inputInt();
+		Point point = PointHelper.getPoint(input);
+		if(point == null) {
+			appView.printError("해당하는 고객 포인트 번호가 없습니다.");
+			return;
+		}
+		appView.printNotice(String.format("현재 포인트 잔액은 %,d원입니다.", point.getUserPoint()));
+		appView.printNotice("수정할 포인트 잔액을 입력해 주세요. (취소는 0 입력)");
+		int balance = appView.inputInt();
+		if(balance == 0) {
+			appView.printNotice("취소되었습니다.");
+			return;
+		} else if(balance < 0) {
+			appView.printNotice("음수를 입력할 수 없습니다.");
+			return;
+		}
+		point.setUserPoint(balance);
+		if(PointHelper.updatePoint(point)) {
+			appView.printNotice("포인트 잔액이 수정되었습니다.");
+		} else {
+			appView.printNotice("포인트 잔액 수정 중 문제가 발생하였습니다.");
+		}
+	}
+	
+	//쿠폰 정보 출력
 	private void printCouponData() {
 		CouponView couponView = new CouponView();
 		Iterator<Coupon> ite = CouponHelper.getCouponDB();
@@ -141,6 +201,7 @@ public class ManageController {
 		couponView.printLine();
 	}
 	
+	//물품 추가
 	private void insertProduct() {
 		int productCode = 0;
 		String productName = "";
@@ -188,6 +249,7 @@ public class ManageController {
 		}
 	}
 	
+	//물품 정보 업데이트
 	private void updateProduct() {
 		this.printProduct();
 		appView.printNotice("수정할 물품의 코드를 입력해 주세요.");
@@ -243,6 +305,7 @@ public class ManageController {
 		}
 	}
 	
+	//물품 삭제
 	private void deleteProduct() {
 		this.printProduct();
 		appView.printNotice("삭제할 물품의 코드를 입력해 주세요.");
@@ -253,10 +316,8 @@ public class ManageController {
 			appView.printError("물품 제거 중 문제가 발생하였습니다.");
 		}
 	}
-	
-	
-	
 
+	//쿠폰 추가
 	private void insertCoupon() {
 		int couponCode = 0;
 		int productCode = 0;
@@ -298,6 +359,7 @@ public class ManageController {
 		}
 	}
 	
+	//쿠폰 삭제
 	private void deleteCoupon() {
 		this.printCouponData();
 		appView.printNotice("삭제할 쿠폰의 코드를 입력해 주세요.");

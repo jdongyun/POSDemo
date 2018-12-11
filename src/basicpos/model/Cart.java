@@ -15,11 +15,11 @@ public class Cart {
 		this.discountPrice = 0;
 	}
 	/*
-	 * 반환값이 참이면 물건을 새로 추가한 것임.
-	 * 반환값이 거짓이면 이미 있던 물건에 물품 개수 값만 바꾼 것임.
+	 * 반환값이 참이면 물건을 새로 추가한 것이고
+	 * 반환값이 거짓이면 이미 있던 물건에 물품 개수 값만 바꾼 것.
 	 */
 	public boolean addProduct(Product product) {
-		int tProdCode = product.getProductCode(); //temp product code의 약자
+		int tProdCode = product.getProductCode(); //물품 코드
 		
 		if(cartMap.containsKey(tProdCode)) { //이미 물건이 추가되어 있으므로, 물건의 개수를 더한다.
 			Product aProd = cartMap.get(tProdCode); 
@@ -34,6 +34,7 @@ public class Cart {
 		}
 	}
 	
+	//카트에 새로운 물품이 추가되면 총 금액을 갱신해야 함
 	public void refreshPrice() {
 		this.cartPrice = 0;
 		Collection<Product> collection = cartMap.values();

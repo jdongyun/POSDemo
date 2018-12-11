@@ -16,14 +16,15 @@ public class AppController {
 	}
 	
 	public void run() {
-		//CouponHelper.createNewTable();
+
+		//메인 페이지에서의 기능 리스트 출력
 		mainView.addView("1. 물품 계산");
 		mainView.addView("2. 물품 환불");
 		mainView.addView("3. 관리자 페이지");
 		mainView.addView("0. 종료");
 
 		while(true) {
-			mainView.printList();
+			mainView.printList(); //메인 페이지 기능 리스트 출력
 			int input = appView.inputInt();
 			
 			switch(input) {

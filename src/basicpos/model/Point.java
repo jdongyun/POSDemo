@@ -16,4 +16,8 @@ public class Point {
 	public int getUserPoint() {
 		return this.userPoint;
 	}
+	
+	public void setUserPoint(int userPoint) {
+		this.userPoint = userPoint;
+	}
 }

@@ -22,7 +22,7 @@ public class PointView implements PrintView {
 	}
 	
 	public void printBody() {
-		System.out.println(String.format("%d   %,24d", userCode, userPoint));
+		System.out.println(String.format("%16d   %,11d", userCode, userPoint));
 	}
 	
 	public void setBody(int userCode, int userPoint) {

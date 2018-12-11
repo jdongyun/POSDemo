@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CouponHelper {
 	
-
+	//새로운 쿠폰 객체를 데이터베이스에 추가
 	public static boolean insertCoupon(Coupon coupon) {
 		String query = "INSERT INTO `Coupon`(`CouponCode`, `ProductCode`, `ProductCount`, `DiscountRate`, `IsUsed`) "
 				+ "VALUES(?,?,?,?,?)";
@@ -36,6 +36,7 @@ public class CouponHelper {
 		}
 	}
 	
+	//수정된 쿠폰 객체를 데이터베이스에 적용
 	public static boolean updateCoupon(Coupon coupon) {
 		String query = "UPDATE `Coupon` SET `ProductCode`=?, `ProductCount`=?, "
 				+ "`DiscountRate`=?, `IsUsed`=? WHERE `CouponCode`=?";
@@ -59,6 +60,7 @@ public class CouponHelper {
 		}
 	}
 	
+	//쿠폰 삭제
 	public static boolean deleteCoupon(int couponCode) {
 		String query = "DELETE FROM `Coupon`"
 				+ "WHERE `CouponCode`=?";
@@ -77,6 +79,7 @@ public class CouponHelper {
 		}
 	}
 	
+	//쿠폰 객체를 데이터베이스에서 가져오기
 	public static Coupon getCoupon(int couponCode) {
 		String query = "SELECT * FROM Coupon where CouponCode=" + couponCode;
 
@@ -95,6 +98,7 @@ public class CouponHelper {
 		}
 	}
 	
+	//전체 쿠폰 목록을 데이터베이스에서 가져오기
 	public static Iterator<Coupon> getCouponDB() {
 		String query = "SELECT * FROM Coupon";
 		List<Coupon> list = new LinkedList<Coupon>();
@@ -121,6 +125,7 @@ public class CouponHelper {
 		}
 	}
 
+	//쿠폰 테이블 생성
 	public static void createNewTable() { // SQLite connection string
 		String url = "jdbc:sqlite:" + DBHelper.dbName;
 		String sql = "CREATE TABLE `Coupon` (\n" + " `CouponCode` integer UNIQUE,\n"
