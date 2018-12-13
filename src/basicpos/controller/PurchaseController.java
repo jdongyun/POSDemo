@@ -146,6 +146,7 @@ public class PurchaseController extends CalcDao {
 		this.printReceipt(purchaseType, receivedCash, taxNumber);
 	}
 	
+	//카트에 물품 담기. (CalcDao의 method를 override)
 	@Override
 	protected void addCart() {
 		while (true) {
@@ -181,7 +182,7 @@ public class PurchaseController extends CalcDao {
 			} else { //쿠폰의 번호가 아니면 물품 번호에서 검색함
 				product = ProductHelper.getProduct(input);
 				
-				if (product == null) { //물품 코드도 아니므로
+				if (product == null) { //물품 코드도 아니면 오류 출력
 					appView.printError("올바른 코드 번호가 아닙니다.");
 					continue;
 				}
@@ -197,7 +198,7 @@ public class PurchaseController extends CalcDao {
 				}
 			}
 
-			if(product.getProductRemain() < inputCount) {
+			if(product.getProductRemain() < inputCount) { //재고수량보다 물품을 많이 담으면 안되므로
 				product = null;
 				appView.printNotice("재고수량보다 물품을 많이 구매할 수 없습니다.");
 				continue;

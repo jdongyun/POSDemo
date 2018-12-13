@@ -120,17 +120,18 @@ public class ManageController {
 		Iterator<Product> ite = ProductHelper.getProductList();
 		
 		appView.printMessage("");
-		productView.printLine();
-		productView.printHead();
+		productView.printLine(); //구분선 출력
+		productView.printHead(); //제목 출력
 		productView.printLine();
 		while(ite.hasNext()) {
 			Product tempProduct = ite.next();
 			
+			//데이터 출력을 위해 값 설정
 			productView.setData(tempProduct.getProductCode(), 
 					tempProduct.getProductName(), 
 					tempProduct.getProductPrice(),
 					tempProduct.getProductRemain());
-			productView.printBody();
+			productView.printBody(); //데이터 출력
 		}
 		productView.printLine();
 		appView.printMessage("");
@@ -156,7 +157,7 @@ public class ManageController {
 	
 	//포인트 정보 업데이트
 	private void updatePoint() {
-		this.printPointData();
+		this.printPointData(); //데이터베이스에 있는 고객 포인트 정보 출력
 		appView.printNotice("고객 포인트 번호를 입력해 주세요. (없는 포인트 번호 입력 시 추가를 수행합니다. 취소는 0 입력)");
 		int input = appView.inputInt();
 		if(input == 0) return;
@@ -168,12 +169,12 @@ public class ManageController {
 			
 			appView.printNotice("입력할 포인트 잔액을 입력해 주세요.");
 			int balance = appView.inputInt();
-			if(balance < 0) {
+			if(balance < 0) { //음수 입력시 종료
 				appView.printNotice("음수를 입력할 수 없습니다.");
 				return;
 			}
-			point.setUserPoint(balance);
-			if(PointHelper.insertPoint(point)) {
+			point.setUserPoint(balance); //포인트 객체에 포인트 잔액 추가
+			if(PointHelper.insertPoint(point)) { //포인트 데이터베이스에 추가
 				appView.printNotice("포인트 번호가 추가되었습니다.");
 			} else {
 				appView.printNotice("포인트 번호 추가 중 문제가 발생하였습니다.");
@@ -188,8 +189,8 @@ public class ManageController {
 				appView.printNotice("음수를 입력할 수 없습니다.");
 				return;
 			}
-			point.setUserPoint(balance);
-			if(PointHelper.updatePoint(point)) {
+			point.setUserPoint(balance); //포인트 객체에 잔액 수정
+			if(PointHelper.updatePoint(point)) { //포인트 데이터베이스에 해당하는 내역 업데이트
 				appView.printNotice("포인트 잔액이 수정되었습니다.");
 			} else {
 				appView.printNotice("포인트 잔액 수정 중 문제가 발생하였습니다.");
