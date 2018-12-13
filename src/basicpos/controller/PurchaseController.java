@@ -166,16 +166,17 @@ public class PurchaseController extends CalcDao {
 					appView.printError("이미 사용된 쿠폰입니다.");
 					continue;
 				}
-				product = ProductHelper.getProduct(coupon.getProductCode());
-				product.setProductCount(coupon.getProductCount());
+				
+				product = ProductHelper.getProduct(coupon.getProductCode()); //데이터베이스에서 쿠폰 번호에 맞는 물품 번호를 가져옴
+				product.setProductCount(coupon.getProductCount()); //데이터베이스에 저장된 물품 개수만큼 추가
 				inputCount = coupon.getProductCount();
 				
-				int allPrice = product.getProductPrice() * product.getProductCount();
-				int discountPrice = (int)(allPrice * (coupon.getDiscountRate() / 100.0));
-				cart.setDiscountPrice(cart.getDiscountPrice() + discountPrice);
+				int allPrice = product.getProductPrice() * product.getProductCount(); //총 금액
+				int discountPrice = (int)(allPrice * (coupon.getDiscountRate() / 100.0)); //할인율이 적용된 할인가격
+				cart.setDiscountPrice(cart.getDiscountPrice() + discountPrice); //할인가격 설정
 				
 				coupon.setIsUsed(true);
-				CouponHelper.updateCoupon(coupon);
+				CouponHelper.updateCoupon(coupon); //쿠폰을 사용했다고 데이터베이스에 업데이트
 				
 			} else { //쿠폰의 번호가 아니면 물품 번호에서 검색함
 				product = ProductHelper.getProduct(input);
@@ -215,23 +216,25 @@ public class PurchaseController extends CalcDao {
 	}
 
 	protected void printAllProduct() {
-		Collection<Product> products = this.cart.getAllProduct();
-		Iterator<Product> ite = products.iterator();
-		int index = 1;
+		Collection<Product> products = this.cart.getAllProduct(); //카트에 담긴 물품들의 Collection
+		Iterator<Product> ite = products.iterator(); //물품 Collection의 Iterator
+		int index = 1; //영수증 왼쪽에 출력할 물품 번호
 		ReceiptView receiptView = new ReceiptView();
 
-		receiptView.printLine();
-		receiptView.printHead();
+		receiptView.printLine(); //구분줄 출력
+		receiptView.printHead(); //영수증 제목 출력
 		receiptView.printLine();
 		while (ite.hasNext()) {
 			Product tempProduct = ite.next();
+			
+			//출력할 데이터 설정
 			receiptView.setData(index, tempProduct.getProductName(), tempProduct.getProductCount(),
 					tempProduct.getProductPrice());
-			receiptView.printBody();
+			receiptView.printBody(); //출력
 			index++;
 		}
 		receiptView.printLine();
-		receiptView.printReceiptPrice(this.cart.getFinalPrice());
+		receiptView.printReceiptPrice(this.cart.getFinalPrice()); //최종 결제액 출력
 		receiptView.printLine();
 	}
 
@@ -256,8 +259,8 @@ public class PurchaseController extends CalcDao {
 		
 		//판매액 및 결제방식 시작
 		receiptView.printLine();
-		receiptView.printDiscountPrice(this.cart.getDiscountPrice());
-		receiptView.printReceiptPrice(this.cart.getFinalPrice());
+		receiptView.printDiscountPrice(this.cart.getDiscountPrice()); //할인금액
+		receiptView.printReceiptPrice(this.cart.getFinalPrice()); //최종금액
 		if (purchaseType == 1) {
 			receiptView.printPurchageType(Enums.PURCHASE_CARD);
 		} else if (purchaseType == 2) {
@@ -302,18 +305,18 @@ public class PurchaseController extends CalcDao {
 			if (pointType == 1 || pointType == 2 || pointType == 0) {
 				break;
 			}
-			if(pointType == 9) return -1;
+			if(pointType == 9) return -1; //-1 반환, 사용 안함을 알림
 			appView.printError("올바른 번호가 아닙니다.");
 		}
 		
-		if(pointType == 1) {
+		if(pointType == 1) { //포인트 적립
 			appView.printNotice("포인트를 적립합니다.");
 			int pointCardNumber = 0;
 			Point point;
 			while(true) {
 				appView.printNotice("사용자의 포인트 카드 번호를 입력해 주세요. (뒤로 가기는 0 입력)");
 				pointCardNumber = appView.inputInt();
-				if(pointCardNumber == 0) return -1;
+				if(pointCardNumber == 0) return -1; //-1 반환, 사용 안함을 알림
 				point = PointHelper.getPoint(pointCardNumber); //PointHelper에서 Point 객체를 불러옴
 				if(point == null) {
 					appView.printError("해당하는 포인트 카드 번호가 없습니다.");
@@ -321,9 +324,9 @@ public class PurchaseController extends CalcDao {
 				}
 				break;
 			}
-			int addPoint = (int)(((double) this.cart.getCartPrice()) * POINT_RATE);
-			point.setUserPoint(point.getUserPoint() + addPoint);
-			PointHelper.updatePoint(point);
+			int addPoint = (int)(((double) this.cart.getCartPrice()) * POINT_RATE); //적립할 금액
+			point.setUserPoint(point.getUserPoint() + addPoint); //적립
+			PointHelper.updatePoint(point); //데이터베이스에 업데이트
 			appView.printNotice(String.format("%,d 포인트가 적립되었습니다.", addPoint));
 		} else if(pointType == 2) {
 			appView.printNotice("포인트를 사용합니다.");

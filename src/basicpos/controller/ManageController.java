@@ -162,7 +162,7 @@ public class ManageController {
 		if(input == 0) return;
 		
 		Point point = PointHelper.getPoint(input);
-		if(point == null) {
+		if(point == null) { //해당하는 고객 포인트 번호가 없으므로 추가하기
 			appView.printError("해당하는 고객 포인트 번호가 없으므로 추가를 수행합니다.");
 			point = new Point(input, 0);
 			
@@ -183,7 +183,7 @@ public class ManageController {
 			}
 			
 			return;
-		} else {
+		} else { //해당하는 고객 포인트 번호의 값을 수정
 			appView.printNotice(String.format("현재 포인트 잔액은 %,d원입니다.", point.getUserPoint()));
 			appView.printNotice("수정할 포인트 잔액을 입력해 주세요. (취소는 0 입력)");
 			int balance = appView.inputInt();
