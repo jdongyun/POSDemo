@@ -9,19 +9,19 @@ public class PointHelper {
 	 * 포인트 적립 및 포인트 사용
 	 */
 	public static boolean insertPoint(Point point) {
-		String query = "INSERT INTO `Point`(`UserCode`, `UserPoint`) "
-				+ "VALUES("+ point.getUserCode() +"," + point.getUserPoint() +")";
-	
-	try  {
-		Connection conn = DBHelper.connect();
-        PreparedStatement pstmt = conn.prepareStatement(query);
-        pstmt.executeUpdate();
-        DBHelper.close();
-        return true;
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false;
-    }
+		String query = "INSERT INTO `Point`(`UserCode`, `UserPoint`) " + "VALUES(" + point.getUserCode() + ","
+				+ point.getUserPoint() + ")";
+
+		try {
+			Connection conn = DBHelper.connect();
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.executeUpdate();
+			DBHelper.close();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	public static boolean updatePoint(Point point) {

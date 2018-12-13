@@ -12,7 +12,7 @@ import basicpos.view.ReceiptView;
 public class RefundController extends CalcDao {
 	
 	public RefundController() {
-		this(Enums.TYPE_PURCHASE);
+		this(Enums.TYPE_REFUND);
 	}
 	
 	private RefundController(Enums type) {
@@ -72,9 +72,6 @@ public class RefundController extends CalcDao {
 			
 			break;
 		}
-		//재고수량 수정
-		this.updateProductRemain();
-
 	}
 
 	@Override

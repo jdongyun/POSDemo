@@ -231,7 +231,7 @@ public class PurchaseController extends CalcDao {
 			index++;
 		}
 		receiptView.printLine();
-		receiptView.printReceiptPrice(this.cart.getCartPrice());
+		receiptView.printReceiptPrice(this.cart.getFinalPrice());
 		receiptView.printLine();
 	}
 

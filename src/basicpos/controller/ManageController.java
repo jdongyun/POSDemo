@@ -94,7 +94,7 @@ public class ManageController {
 				String inputString = appView.inputString();
 				if(inputString.equals("y")) {
 					File dbFile = new File(DBHelper.dbName);
-					if(dbFile.exists() && dbFile.delete()) {
+					if(!dbFile.exists() || (dbFile.exists() && dbFile.delete())) {
 						DBHelper.createNewDatabase();
 						ProductHelper.createNewTable();
 						CouponHelper.createNewTable();
@@ -157,29 +157,52 @@ public class ManageController {
 	//포인트 정보 업데이트
 	private void updatePoint() {
 		this.printPointData();
-		appView.printNotice("수정할 고객 포인트 번호를 입력해 주세요.");
+		appView.printNotice("고객 포인트 번호를 입력해 주세요. (없는 포인트 번호 입력 시 추가를 수행합니다. 취소는 0 입력)");
 		int input = appView.inputInt();
+		if(input == 0) return;
+		
 		Point point = PointHelper.getPoint(input);
 		if(point == null) {
-			appView.printError("해당하는 고객 포인트 번호가 없습니다.");
+			appView.printError("해당하는 고객 포인트 번호가 없으므로 추가를 수행합니다.");
+			point = new Point(input, 0);
+			
+			appView.printNotice("입력할 포인트 잔액을 입력해 주세요. (취소는 0 입력)");
+			int balance = appView.inputInt();
+			if(balance == 0) {
+				appView.printNotice("취소되었습니다.");
+				return;
+			} else if(balance < 0) {
+				appView.printNotice("음수를 입력할 수 없습니다.");
+				return;
+			}
+			point.setUserPoint(balance);
+			if(PointHelper.insertPoint(point)) {
+				appView.printNotice("포인트 번호가 추가되었습니다.");
+			} else {
+				appView.printNotice("포인트 번호 추가 중 문제가 발생하였습니다.");
+			}
+			
 			return;
-		}
-		appView.printNotice(String.format("현재 포인트 잔액은 %,d원입니다.", point.getUserPoint()));
-		appView.printNotice("수정할 포인트 잔액을 입력해 주세요. (취소는 0 입력)");
-		int balance = appView.inputInt();
-		if(balance == 0) {
-			appView.printNotice("취소되었습니다.");
-			return;
-		} else if(balance < 0) {
-			appView.printNotice("음수를 입력할 수 없습니다.");
-			return;
-		}
-		point.setUserPoint(balance);
-		if(PointHelper.updatePoint(point)) {
-			appView.printNotice("포인트 잔액이 수정되었습니다.");
 		} else {
-			appView.printNotice("포인트 잔액 수정 중 문제가 발생하였습니다.");
+			appView.printNotice(String.format("현재 포인트 잔액은 %,d원입니다.", point.getUserPoint()));
+			appView.printNotice("수정할 포인트 잔액을 입력해 주세요. (취소는 0 입력)");
+			int balance = appView.inputInt();
+			if(balance == 0) {
+				appView.printNotice("취소되었습니다.");
+				return;
+			} else if(balance < 0) {
+				appView.printNotice("음수를 입력할 수 없습니다.");
+				return;
+			}
+			point.setUserPoint(balance);
+			if(PointHelper.updatePoint(point)) {
+				appView.printNotice("포인트 잔액이 수정되었습니다.");
+			} else {
+				appView.printNotice("포인트 잔액 수정 중 문제가 발생하였습니다.");
+			}
 		}
+		
+		
 	}
 	
 	//쿠폰 정보 출력
@@ -208,10 +231,16 @@ public class ManageController {
 		int productPrice = 0;
 		boolean isAdultOnly = false;
 		int productRemain = 0;
+		while(true) {
+			appView.printNotice("추가할 물품의 코드를 입력해 주세요.");
+			productCode = appView.inputInt();
+			if(ProductHelper.getProduct(productCode) != null) {
+				appView.printError("해당하는 물품의 코드가 이미 있습니다. 다른 코드를 입력해 주세요.");
+			} else {
+				break;
+			}
+		}
 
-		appView.printNotice("추가할 물품의 코드를 입력해 주세요.");
-		productCode = appView.inputInt();
-		
 		appView.printNotice("추가할 물품의 이름을 입력해 주세요.");
 		productName = appView.inputString();
 		

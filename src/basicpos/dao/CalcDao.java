@@ -96,6 +96,7 @@ public abstract class CalcDao {
 			if(CALC_TYPE == Enums.TYPE_PURCHASE) { //결제면 물품 데이터베이스에서 재고수량을 빼줌
 				tempProduct.setProductRemain(tempProduct.getProductRemain() - tempProduct.getProductCount());
 			} else if(CALC_TYPE == Enums.TYPE_REFUND) { //환불이면 물품 데이터베이스에서 재고수량을 더해줌
+				System.out.println(tempProduct.getProductRemain() + " " + tempProduct.getProductCount());
 				tempProduct.setProductRemain(tempProduct.getProductRemain() + tempProduct.getProductCount());
 			}
 			
