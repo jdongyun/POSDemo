@@ -166,12 +166,9 @@ public class ManageController {
 			appView.printError("해당하는 고객 포인트 번호가 없으므로 추가를 수행합니다.");
 			point = new Point(input, 0);
 			
-			appView.printNotice("입력할 포인트 잔액을 입력해 주세요. (취소는 0 입력)");
+			appView.printNotice("입력할 포인트 잔액을 입력해 주세요.");
 			int balance = appView.inputInt();
-			if(balance == 0) {
-				appView.printNotice("취소되었습니다.");
-				return;
-			} else if(balance < 0) {
+			if(balance < 0) {
 				appView.printNotice("음수를 입력할 수 없습니다.");
 				return;
 			}
@@ -185,12 +182,9 @@ public class ManageController {
 			return;
 		} else { //해당하는 고객 포인트 번호의 값을 수정
 			appView.printNotice(String.format("현재 포인트 잔액은 %,d원입니다.", point.getUserPoint()));
-			appView.printNotice("수정할 포인트 잔액을 입력해 주세요. (취소는 0 입력)");
+			appView.printNotice("수정할 포인트 잔액을 입력해 주세요.");
 			int balance = appView.inputInt();
-			if(balance == 0) {
-				appView.printNotice("취소되었습니다.");
-				return;
-			} else if(balance < 0) {
+			if(balance < 0) {
 				appView.printNotice("음수를 입력할 수 없습니다.");
 				return;
 			}
